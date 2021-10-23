@@ -1,0 +1,29 @@
+{% extends "common.html" %}
+{% block title  %}ログイン{% endblock %}
+{% block header %}ログイン{% endblock %}
+{% block main %}
+{% macro render_error(field) %}
+  <ul class=errors>
+    {% for error in field.errors %}
+      <li class="error">{{ error }}</li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+<form id="loginform" method="post" >  
+    {{ form.csrf_token }}
+    <table border="0" align="center">
+      <tbody>
+        <tr>
+        <th><label class="form-label ">メールアドレス</label></th><td>{{ form.email }}{{ render_error(form.email) }}</td>
+        </tr>
+        <tr>
+        <th><label class="form-label">パスワード</label></th><td>{{ form.password }}{{ render_error(form.password) }}</td>
+        </tr>
+        <tr>
+        <td colspan="2">{{ form.sub }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+{% endblock %}
