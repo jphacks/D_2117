@@ -133,3 +133,6 @@ dmypy.json
 
 # for AI vectors
 *.npy
+
+# for secret files
+secret.yaml
