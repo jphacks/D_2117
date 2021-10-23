@@ -24,7 +24,9 @@ RUN echo "conda activate torch" >> ~/.bashrc
 ENV PATH /opt/conda/envs/torch/bin:$PATH
 
 RUN conda install pytorch torchvision torchaudio cudatoolkit=11.1 -c pytorch -c nvidia -y
-
+RUN conda install -c anaconda numpy pandas pillow scipy -y && \
+    conda install -c conda-forge matplotlib tqdm jupyterlab python-box ipywidgets -y && \
+    pip install opencv-python
 
 WORKDIR /workspace
 
