@@ -1,8 +1,10 @@
-from web.database import *
-from waitress import serve
 from flask import render_template, request, redirect
 import flask_login
+from waitress import serve
 from web.form import *
+from web.database import *
+from werkzeug.utils import secure_filename
+import os
 
 
 """完了済み"""
@@ -84,6 +86,27 @@ def petInfo():
 """開発中"""
 
 
+@app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
+def searchPet():
+    form = SearchPetForm(request.form)
+    if form.validate_on_submit():
+        img = request.files['img']
+        filename = secure_filename(img.filename)
+        img_url = os.path.join('search', filename)
+        img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
+        del img  # メモリ対策
+        new_searchpet = SearchPet(
+            form.prefecture.data, form.city.data, form.features_description.data, img_url, "test")
+        try:
+            db.session.add(new_searchpet)
+            db.session.commit()
+        except:
+            return "登録失敗"
+        return redirect("/")
+
+    return render_template("searchPet.html", form=form)
+
+
 """未完成"""
 
 
@@ -96,20 +119,6 @@ def thread():
 @flask_login.login_required
 def threadDetail():
     return render_template("threadDetail.html")
-
-
-@app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
-def searchPet():
-    form = SearchPetForm(request.form)
-    if form.validate_on_submit():
-        new_searchpet = SearchPet(form.features_description.data, form.prefecture.data, form.city.data,
-                                  form.img.data)
-        try:
-            db.session.add(new_searchpet)
-            db.session.commit()
-        except:
-            print("登録失敗")
-    return render_template("searchPet.html", form=form)
 
 
 @app.route("/myPage", methods=["GET"])  # マイページ

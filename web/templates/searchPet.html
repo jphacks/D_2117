@@ -9,7 +9,7 @@
     {% endfor %}
   </ul>
 {% endmacro %}
-<form id="searchpetform" method="post" >  
+<form id="searchpetform" method="post" enctype="multipart/form-data" >  
     {{ form.csrf_token }}
     <table border="0" align="center">
       <tbody>

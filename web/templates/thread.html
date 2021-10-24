@@ -1,5 +1,9 @@
+{% extends "common.html" %}
+
+{% block main %}
 {% if current_user.is_authenticated %}
 ログイン中
 {% else %}
 ログアウト中
 {% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
+from flask import Flask
 import flask_login
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
 import yaml
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,6 +11,7 @@ with open('./web/secret.yaml') as f:  # 設定ファイル
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = secret['db']['config']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = './web/static/images'
 app.secret_key = secret['db']['secret_key']
 db = SQLAlchemy(app)
 
@@ -73,13 +74,20 @@ class Pet(db.Model):
 class SearchPet(db.Model):
     search_pet_id = db.Column(db.Integer, primary_key=True,
                               autoincrement=True)  # 通し番号
-    features_description = db.Column(db.String(200))  # ペットの詳細
     prefecture = db.Column(db.String(10), nullable=False)  # 県
     city = db.Column(db.String(20), nullable=False)  # 市
-    img_source = db.Column(db.String(30), nullable=False)  # 画像パス
-    vector = db.Column(db.String(30), nullable=False)  # ベクトル　出力相談
+    features_description = db.Column(db.String(200))  # ペットの詳細
+    img_source = db.Column(db.String(100), nullable=False)  # 画像パス
+    vector = db.Column(db.String(100), nullable=False)  # ベクトル　出力相談
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
+
+    def __init__(self, prefecture, city, features_description, img_source, vector):
+        self.prefecture = prefecture
+        self.city = city
+        self.features_description = features_description
+        self.img_source = img_source
+        self.vector = vector
 
 
 class PetImage(db.Model):
