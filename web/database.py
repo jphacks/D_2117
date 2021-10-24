@@ -15,9 +15,9 @@ app.secret_key = secret['db']['secret_key']
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True,
-                        autoincrement=True)  # 通し番号
+class User(flask_login.UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True,
+                   autoincrement=True)  # 通し番号
     user_nickname = db.Column(db.String(10), nullable=False)  # ニックネーム
     user_fname = db.Column(db.String(10), nullable=False)  # 名前
     user_lname = db.Column(db.String(10), nullable=False)  # 苗字
@@ -39,16 +39,12 @@ class User(db.Model):
 
 class UserLogin(db.Model):
     email = db.Column(db.String(50), primary_key=True)  # メール
-    password_hash = db.Column(db.String(100), nullable=False)  # ハッシュ化したパスワード
+    password_hash = db.Column(db.String(1000), nullable=False)  # ハッシュ化したパスワード
     last_login = db.Column(db.DateTime)  # 最終ログイン時刻
 
     def __init__(self, email, password):
         self.email = email
-        self._set_password(password)
-
-    # パスワードをハッシュ化
-    def _set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password)  # パスワードをハッシュ化
 
     # 入力されたパスワードが登録されているパスワードハッシュと一致するかを確認
     def check_password(self, password):

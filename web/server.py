@@ -1,6 +1,7 @@
 from web.database import *
 from waitress import serve
 from flask import render_template, request, redirect
+import flask_login
 from web.form import *
 
 
@@ -23,6 +24,9 @@ def login():
     if form.validate_on_submit():
         userlogin = UserLogin.query.filter_by(
             email=form.email.data).one_or_none()
+
+        if userlogin is None or not userlogin.check_password(form.password.data):
+            return "ログインに失敗"
 
         userlogin.login()  # ログイン時刻を記録
         try:
@@ -58,13 +62,15 @@ def memberInfo():
     if form.validate_on_submit():
         new_user = User(form.user_nickname.data, form.user_fname.data, form.user_lname.data,
                         form.email.data, form.tell.data, form.prefecture.data, form.city.data)
-        new_user_pass = UserLogin(form.email.data, "password")
+        new_user_pass = UserLogin(form.email.data, form.password.data)
         try:
             db.session.add(new_user)
             db.session.add(new_user_pass)
             db.session.commit()
         except:
-            print("登録失敗")
+            return "登録失敗"
+
+        return redirect("/login")
     return render_template("memberInfo.html", form=form)
 
 
@@ -100,14 +106,6 @@ def myPage():
 @flask_login.login_required
 def memberInfoFix():
     return render_template("memberInfoFix.html")
-
-
-"""AI関連テスト"""
-
-
-@app.route("/ai", methods=["GET"])
-def ai():
-    return "AIテスト"
 
 
 """サーバの起動"""
