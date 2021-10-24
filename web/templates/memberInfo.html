@@ -14,62 +14,41 @@
   <table border="0" align="center">
     <tbody>
       <tr>
-      <th><label class="form-label ">ニックネーム</label></th><td>{{ form.user_nickname }}{{ render_error(form.user_nickname) }}</td>
+        <th><label class="form-label ">ニックネーム</label></th>
+        <td>{{ form.user_nickname }}{{ render_error(form.user_nickname) }}</td>
       </tr>
       <tr>
-      <th><label class="form-label">苗字</label></th><td>{{ form.user_lname }}{{ render_error(form.user_lname) }}</td>
+        <th><label class="form-label">苗字</label></th>
+        <td>{{ form.user_lname }}{{ render_error(form.user_lname) }}</td>
       </tr>
       <tr>
-      <th><label class="form-label">名前</label></th><td>{{ form.user_fname }}{{ render_error(form.user_fname) }}</td>
+        <th><label class="form-label">名前</label></th>
+        <td>{{ form.user_fname }}{{ render_error(form.user_fname) }}</td>
       </tr>
       <tr>
-      <th><label class="form-label">メールアドレス</label></th><td>{{ form.email }}{{ render_error(form.email) }}</td>
+        <th><label class="form-label">メールアドレス</label></th>
+        <td>{{ form.email }}{{ render_error(form.email) }}</td>
       </tr>
       <tr>
-        <th><label class="form-label" for="password">パスワード</label></th><td><div name="password" id="password">{{ form.password }}{{ render_error(form.password) }}</div></td>
-      </tr>
-      <!--
-      <tr>
-        <th><label class="form-label" for="passwordConfirm">パスワード確認</label></th><td><div name="passwordConfirm" id="passwordConfirm">{{ form.password_confirm }}{{ render_error(form.password_confirm) }}<div></td>
-      </tr>
-      -->
-      <tr>
-      <th><label class="form-label">電話番号</label></th><td>{{ form.tell }}{{ render_error(form.tell) }}</td>
+        <th><label class="form-label">パスワード</label></th>
+        <td>{{ form.password }}{{ render_error(form.password) }}</td>
       </tr>
       <tr>
-      <th><label class="form-label">県</label></th><td>{{ form.prefecture }}{{ render_error(form.prefecture) }}</td>
+        <th><label class="form-label">電話番号</label></th>
+        <td>{{ form.tell }}{{ render_error(form.tell) }}</td>
       </tr>
       <tr>
-      <th><label class="form-label">市</label></t><td>{{ form.city }}{{ render_error(form.city) }}</td>
+        <th><label class="form-label">県</label></th>
+        <td>{{ form.prefecture }}{{ render_error(form.prefecture) }}</td>
       </tr>
       <tr>
-      <td colspan="2">{{ form.sub }}</td>
+        <th><label class="form-label">市</label></th>
+        <td>{{ form.city }}{{ render_error(form.city) }}</td>
+      </tr>
+      <tr>
+        <td colspan="2">{{ form.sub }}</td>
       </tr>
     </tbody>
   </table>
 </form>
-
-{% endblock %}
-
-{% block js %}
-console.log("call first")
-console.log(document.getElementById("password"))
-  var form = document.forms[0];
-  console.log(form)
-    form.onsubmit = function() {
-      console.log("call on onsubmit")
-      // エラーメッセージをクリアする
-      form.password.setCustomValidity("");
-      // パスワードの一致確認
-      if (form.password.value != form.passwordConfirm.value) {
-        // 一致していなかったら、エラーメッセージを表示する
-        console.log("call not confirm ")
-        form.password.setCustomValidity("パスワードと確認用パスワードが一致しません");
-      }
-    };
-    // 入力値チェックエラーが発生したときの処理
-    form.addEventListener("invalid", function() {
-      console.log("hello are you ok? i just to me ")
-      document.getElementById("errorMessage").innerHTML = "入力値にエラーがあります";}
-    , false);
 {% endblock %}

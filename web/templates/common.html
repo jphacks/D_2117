@@ -21,7 +21,7 @@
                 </h3>
                 <nav class="nav nav-masthead justify-content-center float-md-end">
                     <div class="d-flex">
-                        {% if current_user.is_authenticated%}
+                        {% if current_user.is_authenticated %}
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{current_user.user_number}}</a>
                         <a class="nav-link active" aria-current="page" href="/logout" >ログアウト</a>
                         {% else %}
