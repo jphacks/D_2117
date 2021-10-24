@@ -5,7 +5,7 @@ import flask_login
 from web.form import *
 
 
-"""ログイン関連"""
+"""完了済み"""
 
 login_manager = flask_login.LoginManager(app)
 
@@ -43,17 +43,10 @@ def login():
     return render_template("login.html", form=form)
 
 
-"""webページ"""
-
-
-@app.route("/", methods=["GET"])  # トップページ
-def thread():
-    return render_template("thread.html")
-
-
-@app.route("/test", methods=["GET"])  # Debug
-def test():
-    return render_template("common.html")
+@app.route("/logout", methods=['GET'])  # ログアウトページ
+def logout():
+    flask_login.logout_user()
+    return redirect("/")
 
 
 @app.route("/memberInfo", methods=["GET", "POST"])  # 新規会員情報入力ページ
@@ -74,6 +67,37 @@ def memberInfo():
     return render_template("memberInfo.html", form=form)
 
 
+@app.route("/petInfo", methods=["GET", "POST"])  # ペットの登録
+def petInfo():
+    form = PetInfoForm(request.form)
+    if form.validate_on_submit():
+        new_pet = Pet(flask_login.current_user.id,
+                      form.pet_name.data, form.features_description.data)
+        try:
+            db.session.add(new_pet)
+            db.session.commit()
+        except:
+            return "登録失敗"
+    return render_template("petInfo.html", form=form)
+
+
+"""開発中"""
+
+
+"""未完成"""
+
+
+@app.route("/", methods=["GET"])  # トップページ
+def thread():
+    return render_template("thread.html")
+
+
+@app.route("/threadDetail", methods=["GET"])  # スレッド詳細ページ
+@flask_login.login_required
+def threadDetail():
+    return render_template("threadDetail.html")
+
+
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
 def searchPet():
     form = SearchPetForm(request.form)
@@ -87,19 +111,11 @@ def searchPet():
             print("登録失敗")
     return render_template("searchPet.html", form=form)
 
-# ログインしてからのページ
-
-
-@app.route("/threadDetail", methods=["GET"])  # スレッド詳細ページ
-@flask_login.login_required
-def threadDetail():
-    return render_template("threadDetail.html")
-
 
 @app.route("/myPage", methods=["GET"])  # マイページ
 @flask_login.login_required
 def myPage():
-    return render_template("myPage.html")
+    return redirect("/petInfo")
 
 
 @app.route("/memberInfoFix", methods=["GET"])  # 会員情報修正ページ

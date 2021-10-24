@@ -1,0 +1,31 @@
+{% extends "common.html" %}
+{% block title %}ペット登録{% endblock %}
+{% block header %}ペット登録フォーム{% endblock %}
+{% block main %}
+{% macro render_error(field) %}
+  <ul class=errors>
+    {% for error in field.errors %}
+      <li class="error">{{ error }}</li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+<form id="petinfoform" method="post" >  
+    {{ form.csrf_token }}
+    <table border="0" align="center">
+      <tbody>
+        <tr>
+        <th><label class="form-label ">ペットの名前</label></th><td>{{ form.pet_name }}{{ render_error(form.pet_name) }}</td>
+        </tr>
+        <tr>
+        <th><label class="form-label">ペットの特徴</label></th><td>{{ form.features_description }}{{ render_error(form.features_description) }}</td>
+        </tr>
+        <tr>
+          <th><label class="form-label">画像</label></th><td>{{ form.img }}{{ render_error(form.img) }}</td>
+          </tr>
+        <tr>
+        <td colspan="2">{{ form.sub }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+{% endblock %}

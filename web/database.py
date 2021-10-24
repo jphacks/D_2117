@@ -59,12 +59,15 @@ class Pet(db.Model):
                        autoincrement=True)  # 通し番号
     user_id = db.Column(db.Integer, nullable=False)  # 飼い主ID
     pet_name = db.Column(db.String(20), nullable=False)  # ペットの名前
-    pet_breed = db.Column(db.String(20), nullable=False)  # ペットの品種
-    pet_description = db.Column(db.String(200))  # ペットの詳細
+    features_description = db.Column(db.String(200))  # ペットの詳細
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 変更日時
     lost_flag = db.Column(db.Boolean, default=False)  # 行方不明フラグ
-    lost_time = db.Column(
-        db.DateTime, default=datetime.datetime.now)  # 行方不明になった時刻
+    lost_time = db.Column(db.DateTime)  # 行方不明になった時刻
+
+    def __init__(self, user_id, pet_name, features_description):
+        self.user_id = user_id
+        self.pet_name = pet_name
+        self.features_description = features_description
 
 
 class SearchPet(db.Model):
