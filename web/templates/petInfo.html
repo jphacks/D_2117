@@ -14,16 +14,15 @@
     <table border="0" align="center">
       <tbody>
         <tr>
-        <th><label class="form-label ">ペットの名前</label></th><td>{{ form.pet_name }}{{ render_error(form.pet_name) }}</td>
+          <th><label class="form-label ">ペットの名前</label></th>
+          <td>{{ form.pet_name }}{{ render_error(form.pet_name) }}</td>
         </tr>
         <tr>
-        <th><label class="form-label">ペットの特徴</label></th><td>{{ form.features_description }}{{ render_error(form.features_description) }}</td>
+          <th><label class="form-label">ペットの特徴</label></th>
+          <td>{{ form.features_description }}{{ render_error(form.features_description) }}</td>
         </tr>
         <tr>
-          <th><label class="form-label">画像</label></th><td>{{ form.img }}{{ render_error(form.img) }}</td>
-          </tr>
-        <tr>
-        <td colspan="2">{{ form.sub }}</td>
+          <td colspan="2">{{ form.sub }}</td>
         </tr>
       </tbody>
     </table>

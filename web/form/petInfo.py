@@ -16,5 +16,4 @@ class PetInfoForm(flask_wtf.FlaskForm):
          validators.Length(-1, 200, "最大200文字")],
     )
 
-    img = FileField('img')
     sub = SubmitField("登録")
