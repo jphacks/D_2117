@@ -83,17 +83,20 @@ def petInfo():
     return render_template("petInfo.html", form=form)
 
 
-"""開発中"""
-
-
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
 def searchPet():
     form = SearchPetForm(request.form)
     if form.validate_on_submit():
+        # 画像を加工・保存
         img = request.files['img']
+        if img is None:
+            return "画像を登録してください"
         filename = secure_filename(img.filename)
         img_url = os.path.join('search', filename)
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
+        """
+        AI関連の記述する部分
+        """
         del img  # メモリ対策
         new_searchpet = SearchPet(
             form.prefecture.data, form.city.data, form.features_description.data, img_url, "test")
@@ -107,28 +110,67 @@ def searchPet():
     return render_template("searchPet.html", form=form)
 
 
+"""開発中"""
+
+
+@ app.route("/", methods=["GET"])
+@ app.route("/<reply_id>", methods=["GET"])  # トップページ(スレッド一覧)
+def thread(reply_id="0"):
+    if reply_id.isdigit() == False:
+        reply_id = 0
+    if int(reply_id) < 0:
+        reply_id = 0
+
+    threadlist = Thread.query.filter_by(reply_id=reply_id).all()
+
+    if flask_login.current_user.is_authenticated:
+        form = ThreadForm(request.form)
+
+        # ペットの名前をセレクトできるように
+        pet_list = Pet.query.filter_by(
+            user_id=flask_login.current_user.id).all()
+        if len(pet_list) == 0:
+            return "先にペットを登録してください"
+        form.pet_id.choices = [(pet.pet_id, pet.pet_name)
+                               for pet in pet_list]
+
+        if form.validate_on_submit():
+            # 画像を加工・保存
+            img = request.files['img']
+            if img is None:
+                return "画像を登録してください"
+            filename = secure_filename(img.filename)
+            img_url = os.path.join(form.pet_id.data, filename)
+            img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
+            """
+            AI関連の記述する部分
+            """
+            del img
+
+            # DBへ保存
+            new_thread = Thread(flask_login.current_user.id,
+                                form.pet_id.data, reply_id, img_url, form.message.data, "test")
+            try:
+                db.session.add(new_thread)
+                db.session.commit()
+            except:
+                return "登録失敗"
+
+        return render_template("thread.html", threadlist=threadlist, form=form)
+    return render_template("thread.html", threadlist=threadlist)
+
+
 """未完成"""
 
 
-@app.route("/", methods=["GET"])  # トップページ
-def thread():
-    return render_template("thread.html")
-
-
-@app.route("/threadDetail", methods=["GET"])  # スレッド詳細ページ
-@flask_login.login_required
-def threadDetail():
-    return render_template("threadDetail.html")
-
-
-@app.route("/myPage", methods=["GET"])  # マイページ
-@flask_login.login_required
+@ app.route("/myPage", methods=["GET"])  # マイページ
+@ flask_login.login_required
 def myPage():
     return redirect("/petInfo")
 
 
-@app.route("/memberInfoFix", methods=["GET"])  # 会員情報修正ページ
-@flask_login.login_required
+@ app.route("/memberInfoFix", methods=["GET"])  # 会員情報修正ページ
+@ flask_login.login_required
 def memberInfoFix():
     return render_template("memberInfoFix.html")
 

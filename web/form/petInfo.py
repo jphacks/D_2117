@@ -10,6 +10,7 @@ class PetInfoForm(flask_wtf.FlaskForm):
          validators.Length(-1, 20, "最大20文字")],
     )
 
+    # 特徴を入力してもらうよ
     features_description = TextAreaField(
         'features_description',
         [validators.DataRequired("必須項目"),

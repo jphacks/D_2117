@@ -90,23 +90,25 @@ class SearchPet(db.Model):
         self.vector = vector
 
 
-class PetImage(db.Model):
-    pet_img_id = db.Column(db.Integer, primary_key=True,
-                           autoincrement=True)  # 通し番号
-    pet_id = db.Column(db.Integer, nullable=False)  # ペットのID
-    img_source = db.Column(db.String(30), nullable=False)  # 画像パス
-    vector = db.Column(db.String(30), nullable=False)  # ベクトル　出力相談
-
-
 class Thread(db.Model):
     thread_id = db.Column(db.Integer, primary_key=True,
                           autoincrement=True)  # 通し番号
     user_id = db.Column(db.Integer, nullable=False)  # 飼い主ID
-    message = db.Column(db.String(200))  # メッセージ
+    pet_id = db.Column(db.Integer)  # ペットのID
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
+    img_source = db.Column(db.String(100))  # 画像パス
+    message = db.Column(db.String(200))  # メッセージ
+    vector = db.Column(db.String(100))  # ベクトル
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
-    pet_img_id = db.Column(db.Integer)  # ペットの画像
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
+
+    def __init__(self, user_id, pet_id, reply_id, img_source, message, vector):
+        self.user_id = user_id
+        self.pet_id = pet_id
+        self.reply_id = reply_id
+        self.img_source = img_source
+        self.message = message
+        self.vector = vector
 
 
 db.create_all()
