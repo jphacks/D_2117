@@ -1,6 +1,6 @@
 {% extends "common.html" %}
-{% block title %}スレッド{% endblock %}
-{% block header %}スレッド{% endblock %}
+{% block title %}タイムライン{% endblock %}
+{% block header %}タイムライン{% endblock %}
 {% block main %}
   {% macro render_error(field) %}
     <ul class=errors>
@@ -9,22 +9,41 @@
       {% endfor %}
     </ul>
   {% endmacro %}
+  <div class="card-decks container-">
+      <div class="card border-secondary bg-white mb-3 rounded">
+          <div class="card-header h3">
+              {% if reply_id == 0 %}
+                使い方
+              {% else %}
+                <img src="static/images/{{threadtop.img_source}}" height="500">
+              {% endif %}
+          </div>
+          <div class="card-body">
+              <div style="white-space:pre-wrap;">{{threadtop.message}}</div><br>
+          </div>
+      </div>
+  </div>
   {% if current_user.is_authenticated %}
   <div class="card-decks container-">
     <div class="card border-secondary bg-white mb-3 rounded">
         <div class="card-header h3">
-          新規
+          {% if reply_id == 0 %}
+            新規
+          {% else %}
+            返信
+          {% endif %}
         </div>
         <div class="card-body">
           <form id="threadsubmissionform" method="post" enctype="multipart/form-data" >  
               {{ form.csrf_token }}
-              <table border="0" align="center">
+              <div class="table-responsive">  
+              <table class="table table-bordered">
                 <tbody>
                   <tr>
                     <th><label class="form-label ">メッセージ</label></th>
                     <td>{{ form.message(rows='5', cols='30') }}{{ render_error(form.message) }}</td>
                   </tr>
-                  {% if 0 == 0 %}
+                  {% if reply_id == 0 %}
                   <tr>
                     <th><label class="form-label">ペットの画像</label></th>
                     <td>{{ form.img }}{{ render_error(form.img) }}</td>
@@ -39,6 +58,7 @@
                   </tr>
                 </tbody>
               </table>
+              </div>
           </form>
         </div>
       </div>
@@ -51,7 +71,7 @@
                     <img src="static/images/{{thread.img_source}}" height="500">
                 </div>
                 <div class="card-body">
-                    {{thread.message}}<br>
+                    <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
                     <a href="/{{thread.thread_id}}">返信</a>
                 </div>
             </div>

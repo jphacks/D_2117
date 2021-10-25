@@ -82,7 +82,7 @@ def petInfo():
             db.session.commit()
         except:
             return "登録失敗"
-        return redirect("/")
+        return redirect("/myPage")
     return render_template("petInfo.html", form=form)
 
 
@@ -92,9 +92,9 @@ def searchPet():
     if form.validate_on_submit():
         # 画像を加工・保存
         img = request.files['img']
-        if img is None:
-            return "画像を登録してください"
         filename = secure_filename(img.filename)
+        if filename == '':
+            return "画像を登録してください"
         img_url = os.path.join('search', filename)
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
         """
@@ -122,12 +122,13 @@ def thread(reply_id="0"):
         reply_id = 0
     reply_id = int(reply_id)
 
+    threadtop = Thread.query.filter_by(thread_id=reply_id).first()
     threadlist = Thread.query.filter_by(reply_id=reply_id)
 
     if reply_id == 0:
-        threadlist = threadlist.order_by(Thread.thread_id.desc())
+        threadlist = threadlist.order_by(Thread.thread_id.desc()).all()
     else:
-        threadlist = threadlist.order_by(Thread.thread_id)
+        threadlist = threadlist.order_by(Thread.thread_id).all()
 
     # スレッドの作成にはログイン、ペットの登録がいる
     # 返信にはログインがいる
@@ -142,6 +143,9 @@ def thread(reply_id="0"):
             # ペットの名前をセレクトできるように
             form.pet_id.choices = [(pet.pet_id, pet.pet_name)
                                    for pet in pet_list]
+        else:
+            form.pet_id.choices = [(None, "--")]
+            form.pet_id.default = None
 
         if form.validate_on_submit():
             # 画像を加工・保存
@@ -173,7 +177,7 @@ def thread(reply_id="0"):
             except:
                 return "登録失敗"
 
-    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist.all())
+    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop)
 
 
 """開発中"""
@@ -184,7 +188,9 @@ def thread(reply_id="0"):
 def myPage():
     pet_list = Pet.query.filter_by(
         user_id=flask_login.current_user.id).all()
-    return redirect("/petInfo.html", pet_list=pet_list)
+    threadlist = Thread.query.filter_by(
+        user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
+    return render_template("/myPage.html", pet_list=pet_list, threadlist=threadlist)
 
 
 """未完成"""

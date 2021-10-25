@@ -12,13 +12,13 @@
         <title>{% block title %}{% endblock %}</title>
     </head>
     
-    <body class="h-100 text-center text-black bg-white">
+    <body class="h-100 text-black bg-white">
         {% include "navbar.html"%}
         <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
-        <h3 class="float-md-start mb-sm-0 h1">
-            {% block header %}{% endblock %}
-        </h3>
+            <h2 class="float-md-start text-left mb-sm-0">
+                {% block header %}{% endblock %}
+            </h2>
 
             
             
@@ -40,7 +40,7 @@
             </div>
             {% endif %}
 
-            <footer class="mt-auto fixed-bottom text-black-60">
+            <footer class="mt-auto text-center text-black-60">
                 <!-- <p>github:<a href=""> <a></p> -->
                 <!-- <p>mail:<a href="mailto:"></a></p> -->
                 <p>© 2021 Suwa All Rights Reserved</p>
