@@ -7,8 +7,32 @@ docker build -t jphacks_ai:latest ./environment
 docker run -it --name jphacks_ai --gpus all -v $(pwd):/workspace jphacks_ai:latest /bin/bash
 ```
 ## 2. Usage
-### 2.1 Get vector
-画像のパスを指定し、ベクトルを取得する。
+### 2.1 AI REST API
+画像をAPI経由でPOSTして、特徴ベクトルを取得する。
+
+"endpoint", "img_path", "api_key"の3つを指定する。
+```Python
+import requests
+import yaml
+
+endpoint = "http://127.0.0.1:5000/predict"
+img_path = './ai/input/1_1.jpg'
+
+with open('secret.yaml', 'r') as f:
+    secret = yaml.safe_load(f)
+api_key = secret['AI']['API_KEY']
+
+resp = requests.post(endpoint, files={"file": open(img_path,'rb')}, headers={'api_key':api_key})
+
+resp_dict = resp.json()
+print(resp_dict)  # 4096次元ベクトルがlist型で格納される
+# api_keyが正しい場合
+-> {'authentication': 'ok', 'vector': [-1.6974670886993408, -1.3484156131744385, ... , -0.9846966862678528]}
+# api_keyが間違っている場合
+-> {'authentication': 'no'}
+```
+### 2.2 AI Module
+Pythonモジュールを呼び出し、画像のパスを指定して特徴ベクトルを取得する。
 ```Python
 from dog_vector import DogVector
 
@@ -19,7 +43,8 @@ dogs_path_list = ['./input/individual_dogs/1_1.jpg']
 dogvec = DogVector(img_path_list=dogs_path_list, vector_out_dir='./vectors')
 vec_dict = dogvec.get_vector()
 
-vec_dict >>> {'ImageFilename':[0.01, 0.04, 0.03, ... , 0.92]}  
+print(vec_dict)
+-> {'ImageFilename':[-1.6974670886993408, -1.3484156131744385, ... , -0.9846966862678528]}  
 ```
 ### 2.2 Get Cosine similarity
 2つのベクトルからコサイン類似度を求める
