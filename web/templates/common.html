@@ -14,11 +14,13 @@
     
     <body class="h-100 text-black bg-white">
         {% include "navbar.html"%}
-        <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-
-            <h2 class="float-md-start text-left mb-sm-0">
-                {% block header %}{% endblock %}
-            </h2>
+        <div class="container">
+            
+            <div class="row">
+                <h2 class="float-md-start text-left mb-sm-0">
+                    {% block header %}{% endblock %}
+                </h2>
+            </div>
 
             
             

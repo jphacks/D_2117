@@ -25,6 +25,7 @@ def hello():
 print(f"Loading model ... ", end='')
 model = CustomModel()
 model.eval()
+device = 'cpu'
 print(f"Done!!")
 
 
@@ -65,6 +66,7 @@ def predict():
         if api_auth(request.headers.get('api_key')):
             image_bytes = file.read()
             tensor = transform_image(image_bytes=image_bytes)
+            tensor = tensor.to(device)
             vector = get_vector(tensor)
             return jsonify({'authentication': 'ok', 'vector': vector})
         else:

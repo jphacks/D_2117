@@ -4,7 +4,9 @@ from waitress import serve
 from web.form import *
 from web.database import *
 from werkzeug.utils import secure_filename
+import requests
 import os
+import numpy as np
 
 
 """完了済み"""
@@ -86,6 +88,30 @@ def petInfo():
     return render_template("petInfo.html", form=form)
 
 
+def ai_api(img_path):
+    """
+    # api_keyが正しい場合
+    -> {'authentication': 'ok', 'vector': [-1.6974670886993408, -1.3484156131744385, ..., -0.9846966862678528]}
+    # api_keyが間違っている場合
+    -> {'authentication': 'no'}
+    """
+    endpoint = "http://127.0.0.1:7775/predict"
+    with open('web/secret.yaml', 'r') as f:
+        secret = yaml.safe_load(f)
+    api_key = secret['AI']['API_KEY']
+
+    resp = requests.post(endpoint, files={"file": open(
+        os.path.join(app.config['UPLOAD_FOLDER'], img_path), 'rb')}, headers={'api_key': api_key})
+
+    print(resp)
+    resp_dict = resp.json()
+    if resp_dict["authentication"] == 'ok':
+        return resp_dict["vector"]  # 4096次元ベクトルがlist型で格納される
+    else:
+        print("ベクトル変換エラー")
+        return None
+
+
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
 def searchPet():
     form = SearchPetForm(request.form)
@@ -95,14 +121,18 @@ def searchPet():
         filename = secure_filename(img.filename)
         if filename == '':
             return "画像を登録してください"
+        filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
         img_url = os.path.join('search', filename)
-        img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
-        """
-        AI関連の記述する部分
-        """
+        img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
+
+        # AI関連の記述する部分
+        vector = np.array(ai_api(img_url+".jpg"))
+        vector_url = os.path.join('./web/static/vector/', img_url)
+        np.save(vector_url, vector)
+
         del img  # メモリ対策
         new_searchpet = SearchPet(
-            form.prefecture.data, form.city.data, form.features_description.data, img_url, "test")
+            form.prefecture.data, form.city.data, form.features_description.data, img_url)
         try:
             db.session.add(new_searchpet)
             db.session.commit()
@@ -143,34 +173,36 @@ def thread(reply_id="0"):
             # ペットの名前をセレクトできるように
             form.pet_id.choices = [(pet.pet_id, pet.pet_name)
                                    for pet in pet_list]
-        else:
-            form.pet_id.choices = [(None, "--")]
-            form.pet_id.default = None
 
         if form.validate_on_submit():
             # 画像を加工・保存
             img = request.files['img']
             filename = secure_filename(img.filename)
+
             if filename == '' and reply_id == 0:
                 return "画像を登録してください"
             if reply_id == 0:  # トップページのスレッドは必ず写真あり
+                filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
                 img_url = os.path.join(form.pet_id.data, filename)
                 os.makedirs(os.path.join(
                     app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
                 img.save(os.path.join(
-                    app.config['UPLOAD_FOLDER'], img_url))
-                """
-                AI関連の記述する部分
-                """
-                vector = "test"
-                del img
+                    app.config['UPLOAD_FOLDER'], img_url+".jpg"))
+
+                # AI関連の記述する部分
+                vector = np.array(ai_api(img_url+".jpg"))
+                vector_url = os.path.join('./web/static/vector/', img_url)
+                os.makedirs(os.path.join("./web/static/vector/",
+                            form.pet_id.data), exist_ok=True)
+                np.save(vector_url, vector)
+
+                del img  # メモリ対策
             else:
                 img_url = None
-                vector = None
 
             # DBへ保存
             new_thread = Thread(flask_login.current_user.id,
-                                form.pet_id.data, reply_id, img_url, form.message.data, vector)
+                                form.pet_id.data, reply_id, img_url, form.message.data)
             try:
                 db.session.add(new_thread)
                 db.session.commit()
