@@ -13,6 +13,10 @@ docker run -it --name jphacks_ai --gpus all -v $(pwd):/workspace jphacks_ai:late
 AI:
   API_KEY: 'API_KEYは管理者までお問い合わせください。'
 ```
+- AI API Flaskサーバーを起動 (Flaskサーバーは開発用の為、運用時はNginx, uWSGIを挟むことを推奨)
+```Python
+python /run_ai_api.py
+```
 
 ## 3. Usage
 ### 3.1 AI REST API
