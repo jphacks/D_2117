@@ -225,8 +225,18 @@ def myPage():
     if form.validate_on_submit():
         update_pet = Pet.query.filter_by(pet_id=form.pet_id.data).first()
         update_pet.lost()  # 迷子申請があったら迷子登録
+
+        # 迷子捜索用のスレッド
+        message = "名前："+update_pet.pet_name+"\n特徴：\n"+update_pet.features_description + \
+            "\n迷子登録された時刻：" + \
+            update_pet.lost_time.strftime(
+                "%y/%m/%d %H:%M")+"\n\n下の返信より情報提供お願いします。"
+        lost_thread = Thread(flask_login.current_user.id,
+                             form.pet_id.data, 0, "common/C1", message)
+
         try:
             db.session.add(update_pet)
+            db.session.add(lost_thread)
             db.session.commit()
         except:
             return "登録失敗"
@@ -235,7 +245,8 @@ def myPage():
         user_id=flask_login.current_user.id).all()
     threadlist = Thread.query.filter_by(
         user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
-    return render_template("/myPage.html", form=form, pet_list=pet_list, threadlist=threadlist)
+    lostthread = Thread.query.filter_by(img_source="common/C1")
+    return render_template("/myPage.html", form=form, pet_list=pet_list, threadlist=threadlist, lostthread=lostthread)
 
 
 """未完成"""
