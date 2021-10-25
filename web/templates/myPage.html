@@ -1,5 +1,32 @@
-{%block title%}MyPage{%endblock%}
+{% extends "common.html" %}
+{%block title%}マイページ{%endblock%}
 {%block header%}マイページ{%endblock%}
-{%block main%}
 
+{%block main%}
+    <a href="/petInfo">ペットの登録はこちらから</a>
+    <div class="table-responsive">  
+        <table class="table table-bordered">
+                <tr>
+                    <th>迷子</th><th>名前</th><th>特徴</th>
+                </tr>
+            {% for pet in pet_list %}
+                <tr>
+                    <td></td><td>{{pet.pet_name}}</td><td style="white-space:pre-wrap;">{{pet.features_description}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% for thread in threadlist %}
+        <div class="card-decks container-">
+            <div class="card border-secondary bg-white mb-3 rounded">
+                <div class="card-header h3">
+                    <img src="static/images/{{thread.img_source}}" height="500">
+                </div>
+                <div class="card-body">
+                    {{thread.message}}<br>
+                    <a href="/{{thread.thread_id}}">返信</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {%endblock%}
