@@ -70,6 +70,10 @@ class Pet(db.Model):
         self.pet_name = pet_name
         self.features_description = features_description
 
+    def lost(self):
+        self.lost_flag = True
+        self.lost_time = datetime.datetime.now()
+
 
 class SearchPet(db.Model):
     search_pet_id = db.Column(db.Integer, primary_key=True,

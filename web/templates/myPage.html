@@ -11,7 +11,18 @@
                 </tr>
             {% for pet in pet_list %}
                 <tr>
-                    <td></td><td>{{pet.pet_name}}</td><td style="white-space:pre-wrap;">{{pet.features_description}}</td>
+                    <td>
+                        {% if pet.lost_flag %}
+                        <form id="mypageform" method="post">
+                            {{ form.csrf_token }}
+                            <input type="hidden" name="pet_id" value={{pet.pet_id}}>
+                            {{ form.lost }}
+                        </form>
+                        {% else %}
+                        捜索中
+                        {% endif %}
+                    </td>
+                    <td>{{pet.pet_name}}</td><td style="white-space:pre-wrap;">{{pet.features_description}}</td>
                 </tr>
             {% endfor %}
         </table>

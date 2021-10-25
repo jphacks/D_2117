@@ -100,10 +100,13 @@ def ai_api(img_path):
         secret = yaml.safe_load(f)
     api_key = secret['AI']['API_KEY']
 
-    resp = requests.post(endpoint, files={"file": open(
-        os.path.join(app.config['UPLOAD_FOLDER'], img_path), 'rb')}, headers={'api_key': api_key})
+    try:
+        resp = requests.post(endpoint, files={"file": open(
+            os.path.join(app.config['UPLOAD_FOLDER'], img_path), 'rb')}, headers={'api_key': api_key})
+    except:
+        print("ベクトル変換でエラーが発生しています")
+        return None
 
-    print(resp)
     resp_dict = resp.json()
     if resp_dict["authentication"] == 'ok':
         return resp_dict["vector"]  # 4096次元ベクトルがlist型で格納される
@@ -144,7 +147,7 @@ def searchPet():
 
 
 @ app.route("/", methods=["GET", "POST"])
-@ app.route("/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
+@ app.route("/thread/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
 def thread(reply_id="0"):
     if reply_id.isdigit() == False:
         reply_id = 0
@@ -215,14 +218,24 @@ def thread(reply_id="0"):
 """開発中"""
 
 
-@ app.route("/myPage", methods=["GET"])  # マイページ
+@ app.route("/myPage", methods=["GET", "POST"])  # マイページ
 @ flask_login.login_required
 def myPage():
+    form = MyPageForm(request.form)
+    if form.validate_on_submit():
+        update_pet = Pet.query.filter_by(pet_id=form.pet_id.data).first()
+        update_pet.lost()  # 迷子申請があったら迷子登録
+        try:
+            db.session.add(update_pet)
+            db.session.commit()
+        except:
+            return "登録失敗"
+
     pet_list = Pet.query.filter_by(
         user_id=flask_login.current_user.id).all()
     threadlist = Thread.query.filter_by(
         user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
-    return render_template("/myPage.html", pet_list=pet_list, threadlist=threadlist)
+    return render_template("/myPage.html", form=form, pet_list=pet_list, threadlist=threadlist)
 
 
 """未完成"""

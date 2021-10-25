@@ -12,11 +12,11 @@
         <title>{% block title %}{% endblock %}</title>
     </head>
     
-    <body class="h-100 text-black bg-white">
+    <body class="d-flex flex-column h-100">
         {% include "navbar.html"%}
         <div class="container">
             
-            <div class="row">
+            <div class="row my-3">
                 <h2 class="float-md-start text-left mb-sm-0">
                     {% block header %}{% endblock %}
                 </h2>
@@ -24,29 +24,12 @@
 
             
             
-            <main class="px-3 text-center align-middle">
+            <div class="row">
                 {%block main%}{%endblock%}
-            </main>
-
-            {% if card %}
-            <div class="card-decks container-">
-
-                <div class="card border-secondary bg-white mb-3 rounded">
-                    <div class="card-header h3">
-                        {% block card_header_1 %}{% endblock %}
-                    </div>
-                    <div class="card-body">
-                        {% block card_body_1 %}{% endblock %}
-                    </div> 
-                </div>
             </div>
-            {% endif %}
 
-            <footer class="mt-auto text-center text-black-60">
-                <!-- <p>github:<a href=""> <a></p> -->
-                <!-- <p>mail:<a href="mailto:"></a></p> -->
-                <p>© 2021 Suwa All Rights Reserved</p>
-            </footer>
+            {% include "footer.html"%}
+        
         <div>
         <script type='text/javascript'>
             {% block js %}{% endblock %}

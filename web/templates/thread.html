@@ -36,8 +36,11 @@
         <div class="card-body">
           <form id="threadsubmissionform" method="post" enctype="multipart/form-data" >  
               {{ form.csrf_token }}
-              <div class="table-responsive">  
-              <table class="table table-bordered">
+            <div class="">  
+
+
+              
+              <table class="table table-borderless">
                 <tbody>
                   <tr>
                     <th><label class="form-label ">メッセージ</label></th>
@@ -58,7 +61,10 @@
                   </tr>
                 </tbody>
               </table>
-              </div>
+            
+
+
+            </div>
           </form>
         </div>
       </div>
@@ -72,7 +78,7 @@
                 </div>
                 <div class="card-body">
                     <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                    <a href="/{{thread.thread_id}}">返信</a>
+                    <a href="/thread/{{thread.thread_id}}">返信</a>
                 </div>
             </div>
         </div>
