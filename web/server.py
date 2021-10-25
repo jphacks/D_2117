@@ -80,6 +80,7 @@ def petInfo():
             db.session.commit()
         except:
             return "登録失敗"
+        return redirect("/")
     return render_template("petInfo.html", form=form)
 
 
@@ -113,51 +114,66 @@ def searchPet():
 """開発中"""
 
 
-@ app.route("/", methods=["GET"])
-@ app.route("/<reply_id>", methods=["GET"])  # トップページ(スレッド一覧)
+@ app.route("/", methods=["GET", "POST"])
+@ app.route("/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
 def thread(reply_id="0"):
     if reply_id.isdigit() == False:
         reply_id = 0
     if int(reply_id) < 0:
         reply_id = 0
+    reply_id = int(reply_id)
 
-    threadlist = Thread.query.filter_by(reply_id=reply_id).all()
+    threadlist = Thread.query.filter_by(reply_id=reply_id)
+
+    if reply_id == 0:
+        threadlist = threadlist.order_by(Thread.thread_id)
+    else:
+        threadlist = threadlist.order_by(Thread.thread_id.desc())
+
+    # スレッドの作成にはログイン、ペットの登録がいる
+    # 返信にはログインがいる
 
     if flask_login.current_user.is_authenticated:
         form = ThreadForm(request.form)
 
-        # ペットの名前をセレクトできるように
         pet_list = Pet.query.filter_by(
             user_id=flask_login.current_user.id).all()
-        if len(pet_list) == 0:
-            return "先にペットを登録してください"
-        form.pet_id.choices = [(pet.pet_id, pet.pet_name)
-                               for pet in pet_list]
+        if len(pet_list) > 0:
+            # ペットの名前をセレクトできるように
+            form.pet_id.choices = [(pet.pet_id, pet.pet_name)
+                                   for pet in pet_list]
 
         if form.validate_on_submit():
             # 画像を加工・保存
             img = request.files['img']
-            if img is None:
+            if img is None and reply_id == 0:
                 return "画像を登録してください"
-            filename = secure_filename(img.filename)
-            img_url = os.path.join(form.pet_id.data, filename)
-            img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url))
-            """
-            AI関連の記述する部分
-            """
-            del img
+            if reply_id == 0:  # トップページのスレッドは必ず写真あり
+                filename = secure_filename(img.filename)
+                img_url = os.path.join(form.pet_id.data, filename)
+                os.makedirs(os.path.join(
+                    app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
+                img.save(os.path.join(
+                    app.config['UPLOAD_FOLDER'], img_url))
+                """
+                AI関連の記述する部分
+                """
+                vector = "test"
+                del img
+            else:
+                img_url = None
+                vector = None
 
             # DBへ保存
             new_thread = Thread(flask_login.current_user.id,
-                                form.pet_id.data, reply_id, img_url, form.message.data, "test")
+                                form.pet_id.data, reply_id, img_url, form.message.data, vector)
             try:
                 db.session.add(new_thread)
                 db.session.commit()
             except:
                 return "登録失敗"
 
-        return render_template("thread.html", threadlist=threadlist, form=form)
-    return render_template("thread.html", threadlist=threadlist)
+    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist.all())
 
 
 """未完成"""

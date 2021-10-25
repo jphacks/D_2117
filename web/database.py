@@ -96,7 +96,7 @@ class Thread(db.Model):
     user_id = db.Column(db.Integer, nullable=False)  # 飼い主ID
     pet_id = db.Column(db.Integer)  # ペットのID
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
-    img_source = db.Column(db.String(100))  # 画像パス
+    img_source = db.Column(db.String(100), default=None)  # 画像パス
     message = db.Column(db.String(200))  # メッセージ
     vector = db.Column(db.String(100))  # ベクトル
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ

@@ -2,36 +2,56 @@
 {% block title %}スレッド{% endblock %}
 {% block header %}スレッド{% endblock %}
 {% block main %}
+  {% macro render_error(field) %}
+    <ul class=errors>
+      {% for error in field.errors %}
+        <li class="error">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endmacro %}
+  <div class="card-decks container-">
+    <div class="card border-secondary bg-white mb-3 rounded">
+        <div class="card-header h3">
+          新規
+        </div>
+        <div class="card-body">
+          <form id="threadsubmissionform" method="post" enctype="multipart/form-data" >  
+              {{ form.csrf_token }}
+              <table border="0" align="center">
+                <tbody>
+                  <tr>
+                    <th><label class="form-label ">メッセージ</label></th>
+                    <td>{{ form.message(rows='5', cols='30') }}{{ render_error(form.message) }}</td>
+                  </tr>
+                  {% if reply_id == 0 %}
+                  <tr>
+                    <th><label class="form-label">ペットの画像</label></th>
+                    <td>{{ form.img }}{{ render_error(form.img) }}</td>
+                  </tr>
+                  <tr>
+                    <th><label class="form-label ">画像に写っているペットの名前</label></th>
+                    <td>{{ form.pet_id }}{{ render_error(form.pet_id) }}</td>
+                  </tr>
+                  {% endif %}
+                  <tr>
+                    <td colspan="2">{{ form.sub }}</td>
+                  </tr>
+                </tbody>
+              </table>
+          </form>
+        </div>
+      </div>
+    </div>
     {% for thread in threadlist %}
         <div class="card-decks container-">
             <div class="card border-secondary bg-white mb-3 rounded">
                 <div class="card-header h3">
-                    <img src='static/images/search/dump.jpg' class="rounded-circle" width="100" height="100">
+                    <img src="static/images/{{thread.img_source}}" class="rounded-circle" width="100" height="100">
                 </div>
                 <div class="card-body">
                     {{thread.message}}<br>
-                    <a href="/{{thread.thread_id}}">詳細</a>
-
-                    <form id="threadsubmissionform" method="post" >  
-                        {{ form.csrf_token }}
-                        <table border="0" align="center">
-                          <tbody>
-                            <tr>
-                              <th><label class="form-label ">メッセージ</label></th>
-                              <td>{{ form.message(rows='5', cols='30') }}{{ render_error(form.message) }}</td>
-                            </tr>
-                            <tr>
-                              <th><label class="form-label">ペットの画像</label></th>
-                              <td>{{ form.img }}{{ render_error(form.img) }}</td>
-                            </tr>
-                            <tr>
-                              <td colspan="2">{{ form.sub }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </form>
+                    <a href="/{{thread.thread_id}}">返信</a>
                 </div>
-                
             </div>
         </div>
     {% endfor %}
