@@ -6,8 +6,16 @@ docker build -t jphacks_ai:latest ./environment
 ```bash
 docker run -it --name jphacks_ai --gpus all -v $(pwd):/workspace jphacks_ai:latest /bin/bash
 ```
-## 2. Usage
-### 2.1 AI REST API
+## 2. Preparation
+前準備
+- /secret.yaml ファイルを作成
+```Yaml
+AI:
+  API_KEY: 'API_KEYは管理者までお問い合わせください。'
+```
+
+## 3. Usage
+### 3.1 AI REST API
 画像をAPI経由でPOSTして、特徴ベクトルを取得する。
 
 "endpoint", "img_path", "api_key"の3つを指定する。
@@ -31,7 +39,7 @@ print(resp_dict)  # 4096次元ベクトルがlist型で格納される
 # api_keyが間違っている場合
 -> {'authentication': 'no'}
 ```
-### 2.2 AI Module
+### 3.2 AI Module
 Pythonモジュールを呼び出し、画像のパスを指定して特徴ベクトルを取得する。
 ```Python
 from dog_vector import DogVector
