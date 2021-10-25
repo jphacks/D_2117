@@ -9,6 +9,7 @@
       {% endfor %}
     </ul>
   {% endmacro %}
+  {% if current_user.is_authenticated %}
   <div class="card-decks container-">
     <div class="card border-secondary bg-white mb-3 rounded">
         <div class="card-header h3">
@@ -23,7 +24,7 @@
                     <th><label class="form-label ">メッセージ</label></th>
                     <td>{{ form.message(rows='5', cols='30') }}{{ render_error(form.message) }}</td>
                   </tr>
-                  {% if reply_id == 0 %}
+                  {% if 0 == 0 %}
                   <tr>
                     <th><label class="form-label">ペットの画像</label></th>
                     <td>{{ form.img }}{{ render_error(form.img) }}</td>
@@ -42,11 +43,12 @@
         </div>
       </div>
     </div>
+    {% endif %}
     {% for thread in threadlist %}
         <div class="card-decks container-">
             <div class="card border-secondary bg-white mb-3 rounded">
                 <div class="card-header h3">
-                    <img src="static/images/{{thread.img_source}}" class="rounded-circle" width="100" height="100">
+                    <img src="static/images/{{thread.img_source}}" width="500">
                 </div>
                 <div class="card-body">
                     {{thread.message}}<br>

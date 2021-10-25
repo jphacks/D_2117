@@ -133,8 +133,9 @@ def thread(reply_id="0"):
     # スレッドの作成にはログイン、ペットの登録がいる
     # 返信にはログインがいる
 
+    form = ThreadForm(request.form)
+
     if flask_login.current_user.is_authenticated:
-        form = ThreadForm(request.form)
 
         pet_list = Pet.query.filter_by(
             user_id=flask_login.current_user.id).all()
