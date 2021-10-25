@@ -5,7 +5,7 @@
   {% macro render_error(field) %}
     <ul class=errors>
       {% for error in field.errors %}
-        <li class="error">{{ error }}</li>
+        <font color='red'>{{ error }}</font>
       {% endfor %}
     </ul>
   {% endmacro %}
@@ -30,7 +30,7 @@
                     <td>{{ form.img }}{{ render_error(form.img) }}</td>
                   </tr>
                   <tr>
-                    <th><label class="form-label ">画像に写っているペットの名前</label></th>
+                    <th><label class="form-label ">画像に写っているペットの名前</label><br>(※先に<a href="/petInfo">ペットを登録</a>してください)</th>
                     <td>{{ form.pet_id }}{{ render_error(form.pet_id) }}</td>
                   </tr>
                   {% endif %}
@@ -48,7 +48,7 @@
         <div class="card-decks container-">
             <div class="card border-secondary bg-white mb-3 rounded">
                 <div class="card-header h3">
-                    <img src="static/images/{{thread.img_source}}" width="500">
+                    <img src="static/images/{{thread.img_source}}" height="500">
                 </div>
                 <div class="card-body">
                     {{thread.message}}<br>

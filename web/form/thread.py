@@ -12,6 +12,7 @@ class ThreadForm(flask_wtf.FlaskForm):
 
     img = FileField('img')
 
-    pet_id = SelectField('pet_id', choices=[])  # ペットの名前選択
+    pet_id = SelectField('pet_id', [validators.DataRequired(
+        "先にペット名を登録してください。")], choices=[])  # ペットの名前選択
 
     sub = SubmitField("登録")

@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, flash
 import flask_login
 from waitress import serve
 from web.form import *
@@ -46,6 +46,7 @@ def login():
 
 
 @app.route("/logout", methods=['GET'])  # ログアウトページ
+@ flask_login.login_required
 def logout():
     flask_login.logout_user()
     return redirect("/")
@@ -70,6 +71,7 @@ def memberInfo():
 
 
 @app.route("/petInfo", methods=["GET", "POST"])  # ペットの登録
+@ flask_login.login_required
 def petInfo():
     form = PetInfoForm(request.form)
     if form.validate_on_submit():
@@ -111,9 +113,6 @@ def searchPet():
     return render_template("searchPet.html", form=form)
 
 
-"""開発中"""
-
-
 @ app.route("/", methods=["GET", "POST"])
 @ app.route("/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
 def thread(reply_id="0"):
@@ -126,9 +125,9 @@ def thread(reply_id="0"):
     threadlist = Thread.query.filter_by(reply_id=reply_id)
 
     if reply_id == 0:
-        threadlist = threadlist.order_by(Thread.thread_id)
-    else:
         threadlist = threadlist.order_by(Thread.thread_id.desc())
+    else:
+        threadlist = threadlist.order_by(Thread.thread_id)
 
     # スレッドの作成にはログイン、ペットの登録がいる
     # 返信にはログインがいる
@@ -147,10 +146,10 @@ def thread(reply_id="0"):
         if form.validate_on_submit():
             # 画像を加工・保存
             img = request.files['img']
-            if img is None and reply_id == 0:
+            filename = secure_filename(img.filename)
+            if filename == '' and reply_id == 0:
                 return "画像を登録してください"
             if reply_id == 0:  # トップページのスレッドは必ず写真あり
-                filename = secure_filename(img.filename)
                 img_url = os.path.join(form.pet_id.data, filename)
                 os.makedirs(os.path.join(
                     app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
@@ -177,13 +176,18 @@ def thread(reply_id="0"):
     return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist.all())
 
 
-"""未完成"""
+"""開発中"""
 
 
 @ app.route("/myPage", methods=["GET"])  # マイページ
 @ flask_login.login_required
 def myPage():
-    return redirect("/petInfo")
+    pet_list = Pet.query.filter_by(
+        user_id=flask_login.current_user.id).all()
+    return redirect("/petInfo.html", pet_list=pet_list)
+
+
+"""未完成"""
 
 
 @ app.route("/memberInfoFix", methods=["GET"])  # 会員情報修正ページ
