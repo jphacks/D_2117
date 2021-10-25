@@ -13,7 +13,8 @@ from ai.utils.model import CustomModel
 
 
 app = Flask(__name__)
- 
+
+
 @app.route('/')
 def hello():
     hello = "Hello API"
@@ -26,15 +27,17 @@ model = CustomModel()
 model.eval()
 print(f"Done!!")
 
+
 def api_auth(api_key):
     hash_key = hashlib.sha256(api_key.encode('utf-8')).hexdigest()
     with open('ai/api_true_hash_key.yaml', 'r') as f:
         secret = yaml.safe_load(f)
     true_hash_key = secret['AI']['API_TRUE_HASH_KEY']
-    if true_hash_key ==  hash_key:
+    if true_hash_key == hash_key:
         return True
     else:
         return False
+
 
 def transform_image(image_bytes):
     my_transforms = transforms.Compose([transforms.Resize((512, 512)),
@@ -45,6 +48,7 @@ def transform_image(image_bytes):
     image = Image.open(io.BytesIO(image_bytes))
     return my_transforms(image).unsqueeze(0)
 
+
 def get_vector(tensor):
     print(f"Predicting ... ", end='')
     with torch.no_grad():
@@ -52,6 +56,7 @@ def get_vector(tensor):
     print(f"Done!!")
     out = out.to('cpu').detach().numpy().tolist()[0]
     return out
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -61,12 +66,13 @@ def predict():
             image_bytes = file.read()
             tensor = transform_image(image_bytes=image_bytes)
             vector = get_vector(tensor)
-            return jsonify({'authentication':'ok', 'vector': vector})
+            return jsonify({'authentication': 'ok', 'vector': vector})
         else:
-            return jsonify({'authentication':'no'})
+            return jsonify({'authentication': 'no'})
+
 
 def main():
-    app.run(debug=True)
+    app.run(debug=True, port=7775)
 
 
 if __name__ == "__main__":
