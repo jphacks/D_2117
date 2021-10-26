@@ -176,7 +176,9 @@ def searchPet():
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
-        print(predict_pet(vector, lostpetlist))
+        for pet_id in predict_pet(vector, lostpetlist):
+            predict_thread = Thread.query.filter_by(
+                pet_id=pet_id, img_source="common/C1").first()
 
         del img  # メモリ対策
         new_searchpet = SearchPet(
