@@ -177,8 +177,16 @@ def searchPet():
             lost_flag=True).all()]
 
         for pet_id in predict_pet(vector, lostpetlist):
-            predict_thread = Thread.query.filter_by(
+            lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, img_source="common/C1").first()
+            message = "迷子を発見しました。確認してください。"
+            new_thread = Thread(1, None, lost_thread.thread_id,
+                                img_url, message)
+            try:
+                db.session.add(new_thread)
+                db.session.commit()
+            except:
+                return "登録失敗"
 
         del img  # メモリ対策
         new_searchpet = SearchPet(
