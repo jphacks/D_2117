@@ -14,11 +14,6 @@ import numpy as np
 login_manager = flask_login.LoginManager(app)
 
 
-@app.route("/favicon.ico", methods=['GET'])
-def favicon():
-    return send_from_directory("web/static/images/favicons", "favicon.ico", mimetype="image/vnd.microsoft.icon")
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -172,7 +167,7 @@ def thread(reply_id="0"):
 
     if reply_id == 0:
         threadlist = threadlist.order_by(Thread.thread_id.desc()).all()
-    elif threadtop.img_source == "":
+    elif threadtop is None or threadtop.img_source == "":
         return redirect("/")
     else:
         threadlist = threadlist.order_by(Thread.thread_id).all()
@@ -287,4 +282,4 @@ def memberInfoFix():
 
 def main():
     app.run(host='0.0.0.0', port=7777, debug=True)
-    # serve(app, host='0.0.0.0', port=5000)
+    # serve(app, host='0.0.0.0', port=7777)
