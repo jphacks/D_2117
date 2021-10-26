@@ -112,3 +112,13 @@ class Thread(db.Model):
 
 
 db.create_all()
+if User.query.first() is None:
+    new_user = User("管理者", "01", "管理者",
+                    secret['db']['user'], "00000000000", "長野県", "茅野市")
+    new_user_pass = UserLogin(secret['db']['user'], secret['db']['pass'])
+    try:
+        db.session.add(new_user)
+        db.session.add(new_user_pass)
+        db.session.commit()
+    except:
+        raise "管理者の作成に失敗"
