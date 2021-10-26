@@ -10,23 +10,23 @@
         <link rel="stylesheet" href="/static/css/common.css"/>
         {% block css %}{% endblock %}
         <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" href="./web/static/images/favicons/favicon.ico" id="favicon">
+        <link rel="apple-touch-icon" sizes="180x180" href="web/static/images/favicons/apple-touch-icon-180x180.png">
     </head>
     
     <body class="d-flex flex-column h-100">
         {% include "navbar.html"%}
         <div class="container">
             
-            <div class="pb-4">
-                <h1 class="pt-4 pb-2 font-italic border-bottom">
+            <div class="row pb-4">
+                <h1 class="pt-4 pb-1 font-italic border-bottom">
                     {% block header %}{% endblock %}
                 </h1>
             </div>
 
             
             
-            <div class="row">
-                {%block main%}{%endblock%}
-            </div>
+            {%block main%}{%endblock%}
 
             {% include "footer.html"%}
         

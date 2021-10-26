@@ -9,97 +9,133 @@
       {% endfor %}
     </ul>
   {% endmacro %}
-    <div class="card border-secondary bg-white mb-3 rounded">
-        <div class="card-header h3">
-            {% if reply_id == 0 %}
-              使い方
-            {% else %}
-              <img src="/static/images/{{threadtop.img_source}}.jpg" height="500">
-            {% endif %}
-        </div>
-        <div class="card-body">
-            <div style="white-space:pre-wrap;">{{threadtop.message}}</div><br>
-        </div>
-    </div>
-  {% if current_user.is_authenticated %}
-
+      
+  <!--返信ページ-->
+  {% if reply_id != 0 %}
     <div class='row'>
-      <h3 class="pt-4 pb-2 font-italic border-bottom">
-        {% if reply_id == 0 %}
-          新規投稿
-        {% else %}
-          返信
-        {% endif %}
-      </h3>
-    </div>
 
-
-    <div class="card-decks container-">
-      <div class="card border-secondary bg-white mb-3 rounded">
-        <div class="card-header h3">
-          {% if reply_id == 0 %}
-            新規
-          {% else %}
-            返信
-          {% endif %}
-        </div>
-        
-
-        
-        <div class="card-body">
-          <form id="threadsubmissionform" method="post" enctype="multipart/form-data" >  
-              {{ form.csrf_token }}
-            <div class="">  
-
-              
-              <table class="table table-borderless">
-                <tbody>
-                  <tr>
-                    <th colspan="1"><label class="form-label ">メッセージ</label></th>
-                    <td colspan="2">{{ form.message(rows='5', cols='30') }}{{ render_error(form.message) }}</td>
-                  </tr>
-                  {% if reply_id == 0 %}
-                  <tr>
-                    <th colspan="1"><label class="form-label">ペットの画像</label></th>
-                    <td colspan="2">{{ form.img }}{{ render_error(form.img) }}</td>
-                  </tr>
-                  <tr>
-                    <th colspan="1"><label class="form-label ">画像に写っているペットの名前</label><br>(※先に<a href="/petInfo">ペットを登録</a>してください)</th>
-                    <td>{{ form.pet_id }}{{ render_error(form.pet_id) }}</td>
-                  </tr>
-                  {% endif %}
-                  <tr>
-                    <td colspan="2">{{ form.sub }}</td>
-                  </tr>
-                </tbody>
-              </table>
-          
+      <!--返信元の投稿-->
+      <div class='col-md-6'>
+        <h3 class="pb-1 font-italic border-bottom">date さんの投稿</h3>
+        <div class='mx-0'>
+          <div class="card h-100 p-3">
+            <img src="/static/images/{{threadtop.img_source}}.jpg" class="rounded img-fluid">
+            <div class="card-body">
+              <p class="card-text">{{threadtop.message}}</p>
+              <p class="card-text"><small class="text-muted">{{threadtop.update.strftime("%y/%m/%d %H:%M")}}</small></p>
             </div>
-          </form>
+          </div>
         </div>
       </div>
-    </div>
 
+      <div class='col-md-6'>
+        <div class='mx-0'>
+          <!--返信用フォーム-->
+          <h3 class="pb-1 font-italic border-bottom">返信する</h3>
+          <form name="threadsubmissionform" method="post" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1" class="form-label">メッセージ</label>
+              <textarea class="form-control" name="message" rows="3" required></textarea>
+            </div>
+            <div class='row'>
+              <div class='col'>
+                <div class="d-grid">
+                  <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>送信</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!--返信一覧-->
+        <h3 class="pt-4 pb-1 font-italic border-bottom">みんなの反応</h3>
+        {% for thread in threadlist %}
+            {% if thread.img_source == "" %}
+              <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+            {% endif %}
+            {{ nicknamelist.filter_by(id=thread.user_id).first().user_nickname }}さん
+            <div class="card-body">
+              <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+              {% if thread.img_source == "" %}
+                <a href="/thread/{{thread.thread_id}}">返信する</a>
+              {% endif %}
+            </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
+  {% endif %}
+
+  {% if current_user.is_authenticated %}
+    
+    {% if reply_id == 0 %}
+      <div class='row'>
+        <h3 class="pb-2 font-italic border-bottom">新規投稿</h3>
+      </div>
+    {% endif %}
+    
+    <div class="row pb-4">
+      <form name="threadsubmissionform" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {% if reply_id == 0 %}
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">メッセージ</label>
+            <textarea class="form-control" name="message" rows="3" required></textarea>
+          </div>
+          <div class='row'>
+            <div class='col-md-5'>
+              <div class="mb-3">
+                <label for="formFile" class="form-label">ペットの画像</label>
+                <input class="form-control" type="file" name="img" required>
+              </div>
+            </div>
+            <div class='col-md-5'>
+              <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">ペットの名前 (※先に<a href="/petInfo">ペットを登録</a>してください)</label>
+                <select class="form-select" aria-label="Default select example" name="pet_id" required>
+                  <option selected>ペットの名前</option>
+                  {% for p_id in form.pet_id %}
+                    {{p_id}}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class='col-md-2'>
+              <div class="d-grid">
+                <label for="exampleFormControlTextarea1" class="form-label">&nbsp;</label>
+                <button type="submit" name="sub" class="btn btn-outline-primary">送信</button>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+  {% endif %}
+
+  {% if reply_id == 0 %}
+    <div class='row'>
+      <h3 class="pt-4 pb-1 font-italic border-bottom">
+        みんなの投稿
+      </h3>
+    </div>
+    <div class="pt-2">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for thread in threadlist %}
+        <div class="col">
+          <div class="card h-100 p-3">
+            <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+            <div class="card-body">
+              <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+              <a href="/thread/{{thread.thread_id}}">返信する</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 
 
-  <div class='row'>
-    <h3 class="pt-4 pb-1 font-italic border-bottom">
-      みんなの投稿
-    </h3>
-
-    {% for thread in threadlist %}
-      <div class="card-decks container-">
-          <div class="card border-secondary bg-white mb-3 rounded">
-              <div class="card-header h3">
-                  <img src="static/images/{{thread.img_source}}.jpg" height="500">
-              </div>
-              <div class="card-body">
-                  <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                  <a href="/thread/{{thread.thread_id}}">返信</a>
-              </div>
-          </div>
-      </div>
-    {% endfor %}
-  </div>
 {% endblock %}

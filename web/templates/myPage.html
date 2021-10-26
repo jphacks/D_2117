@@ -35,7 +35,12 @@
                 </div>
                 <div class="card-body">
                     {{thread.message}}<br>
-                    <a href="/{{thread.thread_id}}">返信</a>
+                    <a href="/thread/{{thread.thread_id}}">返信</a>
+                    <form id="mypagedelform" method="post">
+                        {{ delform.csrf_token }}
+                        <input type="hidden" name="thread_id" value={{thread.thread_id}}>
+                        {{ delform.delete }}
+                    </form>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, flash
+from flask import render_template, request, redirect, flash, send_from_directory
 import flask_login
 from waitress import serve
 from web.form import *
@@ -12,6 +12,11 @@ import numpy as np
 """完了済み"""
 
 login_manager = flask_login.LoginManager(app)
+
+
+@app.route("/favicon.ico", methods=['GET'])
+def favicon():
+    return send_from_directory("web/static/images/favicons", "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 
 @login_manager.user_loader
@@ -52,6 +57,11 @@ def login():
 def logout():
     flask_login.logout_user()
     return redirect("/")
+
+
+@app.route("/redirect", methods=['GET'])  # リダイレクト時に表示するページ
+def app_redirect():
+    return render_template("redirect.html", status=request.args.get("status"), next=request.args.get("next"))
 
 
 @app.route("/memberInfo", methods=["GET", "POST"])  # 新規会員情報入力ページ
@@ -155,11 +165,15 @@ def thread(reply_id="0"):
         reply_id = 0
     reply_id = int(reply_id)
 
-    threadtop = Thread.query.filter_by(thread_id=reply_id).first()
-    threadlist = Thread.query.filter_by(reply_id=reply_id)
+    threadtop = Thread.query.filter_by(
+        thread_id=reply_id, del_flag=False).first()
+    threadlist = Thread.query.filter_by(reply_id=reply_id, del_flag=False)
+    nicknamelist = User.query.with_entities(User.id, User.user_nickname)
 
     if reply_id == 0:
         threadlist = threadlist.order_by(Thread.thread_id.desc()).all()
+    elif threadtop.img_source == "":
+        return redirect("/")
     else:
         threadlist = threadlist.order_by(Thread.thread_id).all()
 
@@ -176,30 +190,31 @@ def thread(reply_id="0"):
             # ペットの名前をセレクトできるように
             form.pet_id.choices = [(pet.pet_id, pet.pet_name)
                                    for pet in pet_list]
-
-        if form.validate_on_submit():
+        if form.is_submitted():
             # 画像を加工・保存
-            img = request.files['img']
-            filename = secure_filename(img.filename)
+            if 'img' in request.files:
+                img = request.files['img']
+                filename = secure_filename(img.filename)
 
-            if filename == '' and reply_id == 0:
-                return "画像を登録してください"
-            if reply_id == 0:  # トップページのスレッドは必ず写真あり
-                filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
-                img_url = os.path.join(form.pet_id.data, filename)
-                os.makedirs(os.path.join(
-                    app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
-                img.save(os.path.join(
-                    app.config['UPLOAD_FOLDER'], img_url+".jpg"))
+                if filename == '' and reply_id == 0:
+                    return "画像を登録してください"
 
-                # AI関連の記述する部分
-                vector = np.array(ai_api(img_url+".jpg"))
-                vector_url = os.path.join('./web/static/vector/', img_url)
-                os.makedirs(os.path.join("./web/static/vector/",
-                            form.pet_id.data), exist_ok=True)
-                np.save(vector_url, vector)
+                if reply_id == 0:  # トップページのスレッドは必ず写真あり
+                    filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
+                    img_url = os.path.join(form.pet_id.data, filename)
+                    os.makedirs(os.path.join(
+                        app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
+                    img.save(os.path.join(
+                        app.config['UPLOAD_FOLDER'], img_url+".jpg"))
 
-                del img  # メモリ対策
+                    # AI関連の記述する部分
+                    vector = np.array(ai_api(img_url+".jpg"))
+                    vector_url = os.path.join('./web/static/vector/', img_url)
+                    os.makedirs(os.path.join("./web/static/vector/",
+                                form.pet_id.data), exist_ok=True)
+                    np.save(vector_url, vector)
+
+                    del img  # メモリ対策
             else:
                 img_url = None
 
@@ -211,8 +226,8 @@ def thread(reply_id="0"):
                 db.session.commit()
             except:
                 return "登録失敗"
-
-    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop)
+            return redirect("/redirect?status=threadsuccess&next="+str(reply_id))
+    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop, nicknamelist=nicknamelist)
 
 
 """開発中"""
@@ -222,7 +237,8 @@ def thread(reply_id="0"):
 @ flask_login.login_required
 def myPage():
     form = MyPageForm(request.form)
-    if form.validate_on_submit():
+    delform = MyPageDelForm(request.form)
+    if form.validate_on_submit() and form.pet_id.data:
         update_pet = Pet.query.filter_by(pet_id=form.pet_id.data).first()
         update_pet.lost()  # 迷子申請があったら迷子登録
 
@@ -240,13 +256,21 @@ def myPage():
             db.session.commit()
         except:
             return "登録失敗"
-
+    elif delform.validate_on_submit() and delform.thread_id.data:
+        del_thread = Thread.query.filter_by(
+            thread_id=delform.thread_id.data).first()
+        del_thread.del_flag = True
+        try:
+            db.session.add(del_thread)
+            db.session.commit()
+        except:
+            return "削除に失敗"
     pet_list = Pet.query.filter_by(
         user_id=flask_login.current_user.id).all()
     threadlist = Thread.query.filter_by(
-        user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
-    lostthread = Thread.query.filter_by(img_source="common/C1")
-    return render_template("/myPage.html", form=form, pet_list=pet_list, threadlist=threadlist, lostthread=lostthread)
+        user_id=flask_login.current_user.id, del_flag=False).order_by(Thread.thread_id.desc()).all()
+    lostthread = Thread.query.filter_by(img_source="common/C1", del_flag=False)
+    return render_template("/myPage.html", form=form, delform=delform, pet_list=pet_list, threadlist=threadlist, lostthread=lostthread)
 
 
 """未完成"""
