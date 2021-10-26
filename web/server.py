@@ -152,7 +152,7 @@ def predict_pet(vector1, lostpetlist):  # 発見されたペットのベクト�
                 else:
                     ans[0] = (pet_id, sim)
             ans = ans[np.argsort(ans[:, 1])]  # 類似度を昇順にソート
-    return ans[:, 0][::-1]
+    return zip(ans[:, 0][::-1], ans[:, 1][::-1])
 
 
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
@@ -176,10 +176,12 @@ def searchPet():
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
-        for pet_id in predict_pet(vector, lostpetlist):
+        for pet_id, sim in predict_pet(vector, lostpetlist):
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, lost_flag=True).first()
-            message = "迷子を発見しました。確認してください。"
+            if lost_thread is None:
+                return "現在迷子はいません"
+            message = f"似ている子を発見しました。確認してください。類似度：{sim*100:.2f}%"
             new_thread = Thread(1, None, lost_thread.thread_id,
                                 img_url, message)
             try:
