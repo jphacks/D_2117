@@ -6,6 +6,7 @@ from web.database import *
 from werkzeug.utils import secure_filename
 import requests
 import os
+import glob
 import numpy as np
 
 
@@ -93,7 +94,7 @@ def petInfo():
     return render_template("petInfo.html", form=form)
 
 
-def ai_api(img_path):
+def ai_api(img_path):  # ベクトルの計算
     """
     # api_keyが正しい場合
     -> {'authentication': 'ok', 'vector': [-1.6974670886993408, -1.3484156131744385, ..., -0.9846966862678528]}
@@ -120,6 +121,41 @@ def ai_api(img_path):
         return None
 
 
+def get_cos_sim(v1, v2):
+    """
+    画像から出力した2つのベクトルからコサイン類似度を計算するメソッド
+
+    Parameters
+    ----------
+    v1 : list or numpy
+        1つめのベクトル
+    v2 : list or numpy
+        2つめのベクトル
+    """
+    v1 = np.array(v1)
+    v2 = np.array(v2)
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+
+
+# 発見されたペットのベクトル, 迷子の犬の一覧
+def predict_pet(vector1, lostpetlist):
+    max_ans = 2
+    ans = np.zeros((max_ans, 2))
+    for pet_id in lostpetlist:
+        for npy in glob.glob("./web/static/vector/"+str(pet_id)+"/*"):
+            vector2 = np.load(npy)
+            sim = get_cos_sim(vector1, vector2)  # ベクトルの類似度計算
+            if sim > ans[0, 1]:  # 計算した類似度が上位項目より大きければ
+                npindex = np.where(ans[:, 0] == pet_id)
+                if npindex[0].size != 0:  # すでにpet_idがあれば
+                    if sim > ans[npindex[0], 1]:  # 新しい方が大きければ更新
+                        ans[npindex] = (pet_id, sim)
+                else:
+                    ans[0] = (pet_id, sim)
+            ans = ans[np.argsort(ans[:, 1])]  # 類似度を昇順にソート
+    return ans[:, 0][::-1]
+
+
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
 def searchPet():
     form = SearchPetForm(request.form)
@@ -135,8 +171,10 @@ def searchPet():
 
         # AI関連の記述する部分
         vector = np.array(ai_api(img_url+".jpg"))
-        vector_url = os.path.join('./web/static/vector/', img_url)
-        np.save(vector_url, vector)
+        lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
+            lost_flag=True).all()]
+
+        print(predict_pet(vector, lostpetlist))
 
         del img  # メモリ対策
         new_searchpet = SearchPet(
