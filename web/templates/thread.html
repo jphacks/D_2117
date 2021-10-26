@@ -51,13 +51,13 @@
         <!--返信一覧-->
         <h3 class="pt-4 pb-1 font-italic border-bottom">みんなの反応</h3>
         {% for thread in threadlist %}
-            {% if thread.img_source == "" %}
+            {% if thread.img_source != "" %}
               <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
             {% endif %}
             {{ nicknamelist.filter_by(id=thread.user_id).first().user_nickname }} さん
             <div class="card-body">
               <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-              {% if thread.img_source == "" %}
+              {% if thread.img_source != "" %}
                 <a href="/thread/{{thread.thread_id}}">返信する</a>
               {% endif %}
             </div>

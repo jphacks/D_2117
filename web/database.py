@@ -26,6 +26,7 @@ class User(flask_login.UserMixin, db.Model):
     tell = db.Column(db.String(12),  unique=True, nullable=False)  # 電話
     prefecture = db.Column(db.String(10), nullable=False)  # 県
     city = db.Column(db.String(20), nullable=False)  # 市
+    point = db.Column(db.Integer, default=1000)  # アプリ内通貨
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 変更日時
 
     def __init__(self, user_nickname, user_fname, user_lname, email, tell, prefecture, city):
