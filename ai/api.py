@@ -10,6 +10,7 @@ from torchvision import models
 import torchvision.transforms as transforms
 
 from ai.utils.model import CustomModel
+import os
 
 
 app = Flask(__name__)
@@ -27,6 +28,19 @@ model = CustomModel()
 model.eval()
 device = 'cpu'
 print(f"Done!!")
+
+
+def to_RGB(image:Image, file_name='./tmp/tmp.jpg'):
+
+    os.makedirs('./tmp/', exist_ok=True)
+    
+    if image.mode == 'RGB': return image
+    image.load() # required for png.split()
+    background = Image.new("RGB", image.size, (255, 255, 255))
+    background.paste(image, mask=image.split()[3]) # 3 is the alpha channel
+
+    background.save(file_name, 'JPEG', quality=80)
+    return Image.open(file_name)
 
 
 def api_auth(api_key):
@@ -47,6 +61,7 @@ def transform_image(image_bytes):
                                             [0.485, 0.456, 0.406],
                                             [0.229, 0.224, 0.225])])
     image = Image.open(io.BytesIO(image_bytes))
+    image = to_RGB(image)
     return my_transforms(image).unsqueeze(0)
 
 
