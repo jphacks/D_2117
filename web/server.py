@@ -8,7 +8,6 @@ import requests
 import os
 import glob
 import numpy as np
-from PIL import Image
 
 
 """完了済み"""
