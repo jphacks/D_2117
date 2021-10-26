@@ -138,7 +138,7 @@ def get_cos_sim(v1, v2):
 
 
 def predict_pet(vector1, lostpetlist):  # 発見されたペットのベクトル, 迷子の犬の一覧
-    max_ans = 2
+    max_ans = 1
     ans = np.zeros((max_ans, 2))
     for pet_id in lostpetlist:
         for npy in glob.glob("./web/static/vector/"+str(pet_id)+"/*"):
@@ -178,7 +178,7 @@ def searchPet():
 
         for pet_id in predict_pet(vector, lostpetlist):
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
-                pet_id=pet_id, img_source="common/C1").first()
+                pet_id=pet_id, lost_flag=True).first()
             message = "迷子を発見しました。確認してください。"
             new_thread = Thread(1, None, lost_thread.thread_id,
                                 img_url, message)
@@ -236,6 +236,8 @@ def thread(reply_id="0"):
             form.pet_id.choices = [(pet.pet_id, pet.pet_name)
                                    for pet in pet_list]
         if form.is_submitted():
+            if form.pet_id.data == "":
+                return "名前を選択して下さい"
             # 画像を加工・保存
             if 'img' in request.files:
                 img = request.files['img']
@@ -296,8 +298,14 @@ def myPage():
             "\n迷子登録された時刻：" + \
             update_pet.lost_time.strftime(
                 "%y/%m/%d %H:%M")+"\n\n下の返信より情報提供お願いします。"
+        last_thread = Thread.query.filter_by(
+            pet_id=form.pet_id.data).order_by(Thread.thread_id.desc()).first()
+        if last_thread is not None:
+            last_thread = last_thread.img_source
+        else:
+            last_thread = "common/C1"
         lost_thread = Thread(flask_login.current_user.id,
-                             form.pet_id.data, 0, "common/C1", message)
+                             form.pet_id.data, 0, last_thread, message, True)
 
         try:
             db.session.add(update_pet)

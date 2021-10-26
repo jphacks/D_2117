@@ -21,7 +21,7 @@
           <div class="card h-100 p-3">
             <img src="/static/images/{{threadtop.img_source}}.jpg" class="rounded img-fluid">
             <div class="card-body">
-              <p class="card-text">{{threadtop.message}}</p>
+              <p class="card-text" style="white-space:pre-wrap;">{{threadtop.message}}</p>
               <p class="card-text"><small class="text-muted">{{threadtop.update.strftime("%y/%m/%d %H:%M")}}</small></p>
             </div>
           </div>
@@ -36,7 +36,7 @@
             {{ form.csrf_token }}
             <div class="mb-3">
               <label for="exampleFormControlTextarea1" class="form-label">メッセージ</label>
-              <textarea class="form-control" name="message" rows="3" required></textarea>
+              <textarea class="form-control" name="message" rows="3" maxlength="400" required></textarea>
             </div>
             <div class='row'>
               <div class='col'>
@@ -82,7 +82,7 @@
         {% if reply_id == 0 %}
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">メッセージ</label>
-            <textarea class="form-control" name="message" rows="3" required></textarea>
+            <textarea class="form-control" name="message" rows="3" maxlength="400" required></textarea>
           </div>
           <div class='row'>
             <div class='col-md-5'>
@@ -95,7 +95,7 @@
               <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">ペットの名前 (※先に<a href="/petInfo">ペットを登録</a>してください)</label>
                 <select class="form-select" aria-label="Default select example" name="pet_id" required>
-                  <option selected>ペットの名前</option>
+                  <option selected value="" disabled>ペットの名前を選択</option>
                   {% for p_id in form.pet_id %}
                     {{p_id}}
                   {% endfor %}
@@ -124,7 +124,9 @@
       <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for thread in threadlist %}
         <div class="col">
-          <div class="card h-100 p-3">
+          {% if 1 == 1%}
+          {% endif %}
+          <div class="card h-100 p-3 bg-warning">
             <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
             <div class="card-body">
               <div style="white-space:pre-wrap;">{{thread.message}}</div><br>

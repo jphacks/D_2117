@@ -31,10 +31,10 @@
         <div class="card-decks container-">
             <div class="card border-secondary bg-white mb-3 rounded">
                 <div class="card-header h3">
-                    <img src="static/images/{{thread.img_source}}.jpg" height="500">
+                    <img src="static/images/{{thread.img_source}}.jpg" class="rounded img-fluid">
                 </div>
                 <div class="card-body">
-                    {{thread.message}}<br>
+                    <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
                     <a href="/thread/{{thread.thread_id}}">返信</a>
                     <form id="mypagedelform" method="post">
                         {{ delform.csrf_token }}

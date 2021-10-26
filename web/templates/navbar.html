@@ -26,6 +26,10 @@
             <!-- ログイン / ログアウト / 新規登録 -->
             <div class="d-flex">
                 {% if current_user.is_authenticated %}
+                <div class="">
+                    {{current_user.user_nickname}} さん、こんにちは！
+                </div>
+
                 <a class="btn btn-outline-secondary me-1" href="/logout" role="button">ログアウト</a>
                 {% else %}
                 <a class="btn btn-outline-secondary me-1" href="/login" role="button">ログイン</a>

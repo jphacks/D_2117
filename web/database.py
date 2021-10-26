@@ -61,7 +61,7 @@ class Pet(db.Model):
                        autoincrement=True)  # 通し番号
     user_id = db.Column(db.Integer, nullable=False)  # 飼い主ID
     pet_name = db.Column(db.String(20), nullable=False)  # ペットの名前
-    features_description = db.Column(db.String(200))  # ペットの詳細
+    features_description = db.Column(db.String(500))  # ペットの詳細
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 変更日時
     lost_flag = db.Column(db.Boolean, default=False)  # 行方不明フラグ
     lost_time = db.Column(db.DateTime)  # 行方不明になった時刻
@@ -81,7 +81,7 @@ class SearchPet(db.Model):
                               autoincrement=True)  # 通し番号
     prefecture = db.Column(db.String(10), nullable=False)  # 県
     city = db.Column(db.String(20), nullable=False)  # 市
-    features_description = db.Column(db.String(200))  # ペットの詳細
+    features_description = db.Column(db.String(500))  # ペットの詳細
     img_source = db.Column(db.String(100), nullable=False)  # 画像パス
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
@@ -100,16 +100,19 @@ class Thread(db.Model):
     pet_id = db.Column(db.Integer)  # ペットのID
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
     img_source = db.Column(db.String(100), default=None)  # 画像パス
-    message = db.Column(db.String(200))  # メッセージ
+    message = db.Column(db.String(500))  # メッセージ
+    lost_flag = db.Column(db.Boolean, default=False)
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
+    total_point = db.Column(db.Integer, default=0)  # スレッド内の総移動数
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
 
-    def __init__(self, user_id, pet_id, reply_id, img_source, message):
+    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False):
         self.user_id = user_id
         self.pet_id = pet_id
         self.reply_id = reply_id
         self.img_source = img_source
         self.message = message
+        self.lost_flag = lost_flag
 
 
 db.create_all()
