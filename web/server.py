@@ -137,8 +137,7 @@ def get_cos_sim(v1, v2):
     return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 
-# 発見されたペットのベクトル, 迷子の犬の一覧
-def predict_pet(vector1, lostpetlist):
+def predict_pet(vector1, lostpetlist):  # 発見されたペットのベクトル, 迷子の犬の一覧
     max_ans = 2
     ans = np.zeros((max_ans, 2))
     for pet_id in lostpetlist:
@@ -170,7 +169,10 @@ def searchPet():
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
 
         # AI関連の記述する部分
-        vector = np.array(ai_api(img_url+".jpg"))
+        try:
+            vector = np.array(ai_api(img_url+".jpg"))
+        except:
+            return redirect("/searchPet")
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
@@ -240,12 +242,16 @@ def thread(reply_id="0"):
                     img.save(os.path.join(
                         app.config['UPLOAD_FOLDER'], img_url+".jpg"))
 
-                    # AI関連の記述する部分
-                    vector = np.array(ai_api(img_url+".jpg"))
-                    vector_url = os.path.join('./web/static/vector/', img_url)
-                    os.makedirs(os.path.join("./web/static/vector/",
-                                form.pet_id.data), exist_ok=True)
-                    np.save(vector_url, vector)
+                    try:
+                        # AI関連の記述する部分
+                        vector = np.array(ai_api(img_url+".jpg"))
+                        vector_url = os.path.join(
+                            './web/static/vector/', img_url)
+                        os.makedirs(os.path.join("./web/static/vector/",
+                                    form.pet_id.data), exist_ok=True)
+                        np.save(vector_url, vector)
+                    except:
+                        pass
 
                     del img  # メモリ対策
             else:
