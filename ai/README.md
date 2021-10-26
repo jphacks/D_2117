@@ -61,7 +61,7 @@ print(vec_dict)
 ### 2.2 Get Cosine similarity
 2つのベクトルからコサイン類似度を求める
 ```Python
-import utils.calc_sim import get_cos_sim
+import ai.utils.calc_sim import get_cos_sim
 
 v1 = [0, 1, 2, 3, 4]  # list or numpy
 v2 = [0, 1, 2, 3, 4]  # list or numpy

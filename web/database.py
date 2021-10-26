@@ -70,6 +70,10 @@ class Pet(db.Model):
         self.pet_name = pet_name
         self.features_description = features_description
 
+    def lost(self):
+        self.lost_flag = True
+        self.lost_time = datetime.datetime.now()
+
 
 class SearchPet(db.Model):
     search_pet_id = db.Column(db.Integer, primary_key=True,
@@ -78,16 +82,14 @@ class SearchPet(db.Model):
     city = db.Column(db.String(20), nullable=False)  # 市
     features_description = db.Column(db.String(200))  # ペットの詳細
     img_source = db.Column(db.String(100), nullable=False)  # 画像パス
-    vector = db.Column(db.String(100), nullable=False)  # ベクトル　出力相談
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
 
-    def __init__(self, prefecture, city, features_description, img_source, vector):
+    def __init__(self, prefecture, city, features_description, img_source):
         self.prefecture = prefecture
         self.city = city
         self.features_description = features_description
         self.img_source = img_source
-        self.vector = vector
 
 
 class Thread(db.Model):
@@ -98,17 +100,15 @@ class Thread(db.Model):
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
     img_source = db.Column(db.String(100), default=None)  # 画像パス
     message = db.Column(db.String(200))  # メッセージ
-    vector = db.Column(db.String(100))  # ベクトル
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
 
-    def __init__(self, user_id, pet_id, reply_id, img_source, message, vector):
+    def __init__(self, user_id, pet_id, reply_id, img_source, message):
         self.user_id = user_id
         self.pet_id = pet_id
         self.reply_id = reply_id
         self.img_source = img_source
         self.message = message
-        self.vector = vector
 
 
 db.create_all()

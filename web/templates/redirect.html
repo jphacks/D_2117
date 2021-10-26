@@ -1,0 +1,15 @@
+{% extends "common.html" %}
+{% block title %}リダイレクト{% endblock %}
+{% block header %}リダイレクト中{% endblock %}
+
+{% block js %}
+    {% if status == "logout" %}
+        alert("ログアウトしました。\n3秒後にページを移動します。");
+        setTimeout("location.href='/'",1000*3);
+    {% elif status == "threadsuccess" %}
+        alert("登録しました");
+        location.href="/thread/{{next}}"
+    {% else %}
+        location.href="/"
+    {% endif %}
+{% endblock %}
