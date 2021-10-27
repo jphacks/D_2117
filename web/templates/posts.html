@@ -18,13 +18,21 @@
           {% endif %}
               <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
               <div class="card-body">
-                <div class="text-muted pb-2">
-                  <ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>のお名前 
-                  <a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
-                </div>
+                {% if thread.found_flag == False%}
+                  <div class="text-muted pb-2">
+                    <ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>のお名前 
+                    <a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
+                  </div>
+                {% endif %}
                 <div class="pb-4">
-                  <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                </div>
+                <div style="white-space:pre-wrap;">
+                {% if thread.found_flag == True%}
+                    {{ thread.message.split("<thread_id>") }}
+                {% else %}       
+                    {{thread.message}} 
+                {% endif %}
+              </div><br>
+              </div>
               </div>
 
               <!-- MyPageの場合は投稿削除フラグを表示-->
@@ -71,3 +79,4 @@
     {% endfor %}
   </div>
 </div>
+

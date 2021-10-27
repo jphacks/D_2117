@@ -404,7 +404,7 @@ def searchPet():
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
-        found_message = f"迷子が {form.prefecture.data} {form.city.data} 発見されました。\n\n【発見者のコメント】\n{form.features_description.data}\n\n【AIの予測結果】\n"
+        found_message = f"迷子が {form.prefecture.data} {form.city.data} で発見されました。\n\n【発見者のコメント】\n{form.features_description.data}\n\n【AIの予測結果】\n"
 
         for pet_id, sim in predict_pet(vector, lostpetlist):
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
@@ -412,7 +412,7 @@ def searchPet():
             if lost_thread is None:
                 return redirect("/redirect?status=searchpete3")
             message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見しました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
-            found_message += f"類似度：{sim*100:.2f}% http://date.ddns.net:7777/thread/{lost_thread.thread_id} \n"
+            found_message += f"類似度：{sim*100:.2f}% <thread_id>{lost_thread.thread_id}<thread_id> \n"
             new_thread = Thread(1, None, lost_thread.thread_id,
                                 img_url, message)
             try:
