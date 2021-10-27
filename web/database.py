@@ -49,12 +49,14 @@ class User(flask_login.UserMixin, db.Model):
 
 class UserLogin(db.Model):
     email = db.Column(db.String(50), primary_key=True)  # メール
-    password_hash = db.Column(db.String(1000), nullable=False)  # ハッシュ化したパスワード
     last_login = db.Column(db.DateTime)  # 最終ログイン時刻
+    password_hash = db.Column(db.String(1000), nullable=False)  # ハッシュ化したパスワード
+    email_check = db.Column(db.String(300))  # メール確認用の文字列(認証済みなら"")
 
-    def __init__(self, email, password):
+    def __init__(self, email, password, email_check):
         self.email = email
         self.password_hash = generate_password_hash(password)  # パスワードをハッシュ化
+        self.email_check = email_check
 
     # 入力されたパスワードが登録されているパスワードハッシュと一致するかを確認
     def check_password(self, password):
@@ -128,7 +130,7 @@ db.create_all()
 if User.query.first() is None:
     new_user = User("管理者", "01", "管理者",
                     secret['db']['user'], "00000000000", "長野県", "茅野市")
-    new_user_pass = UserLogin(secret['db']['user'], secret['db']['pass'])
+    new_user_pass = UserLogin(secret['db']['user'], secret['db']['pass'], None)
     try:
         db.session.add(new_user)
         db.session.add(new_user_pass)

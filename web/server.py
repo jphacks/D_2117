@@ -1,3 +1,4 @@
+from email import message
 from flask import render_template, request, redirect, flash, send_from_directory
 import flask_login
 from waitress import serve
@@ -38,7 +39,7 @@ def login():
     form = LogInForm(request.form)
     if form.validate_on_submit():
         userlogin = UserLogin.query.filter_by(
-            email=form.email.data).one_or_none()
+            email=form.email.data, email_check=None).one_or_none()
 
         if userlogin is None or not userlogin.check_password(form.password.data):
             return redirect("/redirect?status=loginf")
@@ -68,7 +69,7 @@ def logout():
 """ユーザー周り"""
 
 
-def str_gen(size=200):
+def str_gen(size=200):  # 200文字のランダムな文字列の生成
     chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
     return ''.join(secrets.choice(chars) for x in range(size))
 
@@ -143,17 +144,42 @@ def petInfo():
 def memberInfo():
     form = MemberInfoForm(request.form)
     if form.validate_on_submit():
+        flag = 1
+        while flag:  # 確認用文字列が既に使われていないか確認
+            email_check = str_gen()
+            if UserLogin.query.filter_by(email_check=email_check).first() is None:
+                falg = 1
         new_user = User(form.user_nickname.data, form.user_fname.data, form.user_lname.data,
                         form.email.data, form.tell.data, form.prefecture.data, form.city.data)
-        new_user_pass = UserLogin(form.email.data, form.password.data)
+        new_user_pass = UserLogin(
+            form.email.data, form.password.data, email_check)
         try:
             db.session.add(new_user)
             db.session.add(new_user_pass)
             db.session.commit()
         except:
             return redirect("/redirect?status=memberinfof")
+        message = "FindPetMeにご登録いただきありがとうございます。\n以下のURLより登録を完了させてください。\nhttp://date.ddns.net:7777/email?check=" + \
+            email_check+"/nまた、心当たりのない場合はメールの削除をお願いします。"
+        send_mail(form.email.data, message)
         return redirect("/redirect?status=memberinfos")
     return render_template("memberInfo.html", form=form)
+
+
+@app.route("/email", methods=['GET'])  # メールの認証
+def email():
+    email_check = request.args.get("check")
+    if email_check == "" or email_check is None:
+        return redirect("/redirect?status=emailf")
+    check_user = UserLogin.query.filter_by(
+        email_check=email_check).one_or_none()
+    check_user.email_check = None
+    try:
+        db.session.add(check_user)
+        db.session.commit()
+    except:
+        return redirect("/redirect?status=emailf")
+    return redirect("/redirect?status=emails")
 
 
 @ app.route("/memberInfoFix", methods=["GET", "POST"])  # 会員情報修正ページ

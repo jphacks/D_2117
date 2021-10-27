@@ -39,7 +39,14 @@
         alert("登録に失敗しました。\n入力内容を確認してください。");
         location.href="/memberInfo"
     {% elif status == "memberinfos" %}
-        alert("登録しました。");
+        alert("仮登録しました。\n登録いただいたメールアドレスに確認メールをお送りしましたので、本登録をお願いします。");
+        location.href="/"
+
+    {% elif status == "emailf" %}
+        alert("本登録に失敗しました。");
+        location.href="/"
+    {% elif status == "emails" %}
+        alert("本登録に成功しました。");
         location.href="/login"
 
     {% elif status == "memberinfofixf" %}

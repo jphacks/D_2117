@@ -3,35 +3,46 @@
       {% for thread in threadlist %}
         <div class="col">
           <!--迷子-->
-          {% if thread.lost_flag %}
+            {% if thread.lost_flag %}
             <div class="card h-100 p-3 border-warning">
-              <div class="mb-2 badge bg-warning text-wrap fs-3">迷子速報！</div>
-              <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
-              <div class="card-body">
-                <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                <a href="/thread/{{thread.thread_id}}">返信する</a>
-              </div>
-            </div>
-          <!--通常-->
-          {% else %}
+                <div class="mb-2 badge bg-warning text-wrap fs-3">
+                    迷子速報！
+                </div>
+            {% else %}
             <div class="card h-100 p-3">
-              <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
-              <div class="card-body">
-                <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                <a href="/thread/{{thread.thread_id}}">返信する</a>
-              </div>
+            {% endif %}
+                <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+                <div class="card-body">
+                    <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+                </div>
+
+                <!-- MyPageの場合は投稿削除フラグを表示-->
+                {%- if request.path == "/myPage" %}
+                <div class="card-footer">
+                    <!--変身ボタン-->
+                    <div class="d-grid pb-3">
+                        <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                    </div>
+                    <!--削除ボタン-->
+                    <form id="mypagedelform" method="post">
+                        {{ delform.csrf_token }}
+                        <div class="d-grid">
+                            <input type="hidden" name="thread_id" value={{thread.thread_id}}>
+                            <button class="btn btn-outline-dark btn-sm" id='delete' name='delete' type=submit value='削除'>
+                                投稿を削除する
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="card-footer">
+                    <div class="d-grid">
+                        <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-          {% endif %}
         
-          <!-- MyPageの場合は投稿削除フラグを表示-->
-          {%- if request.path == "/myPage" %}
-            <form id="mypagedelform" method="post">
-                {{ delform.csrf_token }}
-                <!--<input type="hidden" name="thread_id" value={{thread.thread_id}}>-->
-                <button type="hidden" class="btn btn-primary"　name="thread_id" value={{thread.thread_id}}>削除</button>
-                {{ delform.delete }}
-            </form>
-          {% endif %}
           
         </div>
       {% endfor %}
