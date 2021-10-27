@@ -7,7 +7,7 @@ class SearchPetForm(flask_wtf.FlaskForm):
     features_description = TextAreaField(
         'features_description',
         [validators.DataRequired("必須項目"),
-         validators.Length(-1, 200, "最大200文字")],
+         validators.Length(-1, 400, "最大200文字")],
     )
 
     prefecture = StringField(

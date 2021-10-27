@@ -51,7 +51,7 @@ from dog_vector import DogVector
 dogs_path_list = ['./input/individual_dogs/1_1.jpg']
 
 # vector_out_dir : str
-# 　　ベクトルの出力先ディレクトリ
+#   ベクトルの出力先ディレクトリ
 dogvec = DogVector(img_path_list=dogs_path_list, vector_out_dir='./vectors')
 vec_dict = dogvec.get_vector()
 

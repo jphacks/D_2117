@@ -9,23 +9,37 @@
     {% endfor %}
   </ul>
 {% endmacro %}
-<form id="loginform" method="post" >  
+
+  <form id="loginform" method="post" >
     {{ form.csrf_token }}
-    <table border="0" align="center">
-      <tbody>
-        <tr>
-        <th><label class="form-label ">メールアドレス</label></th><td>{{ form.email }}{{ render_error(form.email) }}</td>
-        </tr>
-        <tr>
-        <th><label class="form-label">パスワード</label></th><td>{{ form.password }}{{ render_error(form.password) }}</td>
-        </tr>
-        <tr>
-        <td colspan="2">{{ form.sub }}</td>
-        </tr>
-          <td colspan="2"><a href = "http://date.ddns.net:7777/memberInfo">新規登録ページ</a></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="row pb-2">
+      <div class="form-group">
+        <label for="exampleInputEmail1">メールアドレス</label>
+        <input type="email" class="form-control" name="email" id="exampleInputEmail1" maxlength="50" aria-describedby="emailHelp" placeholder="ilove@pet.com" required>
+      </div>
+    </div>
+    <div class="row pb-4">
+      <div class="form-group">
+        <label for="exampleInputPassword1">パスワード</label>
+        <input type="password" class="form-control" name="password" id="exampleInputPassword1" maxlength="50" placeholder="Password" maxlength="50" required>
+      </div>
+    </div>
+    <div class="row">
+      <div class='d-grid'>
+        <button type="submit" class="btn btn-outline-primary" name="sub">ログイン</button>
+      </div>
+    </div>
   </form>
+
+
+
+  <div class="row pt-5">
+    <hr>
+    <div class="pt-4">
+      <div class='d-grid'>
+        <a class="btn btn-outline-secondary me-1 btn-sm" href="/memberInfo" role="button">新規登録ページはこちら</a>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}

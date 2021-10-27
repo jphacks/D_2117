@@ -23,7 +23,7 @@ class MemberInfoForm(flask_wtf.FlaskForm):
     )
 
     email = StringField(
-        'email',
+        'x',
         [validators.DataRequired("必須項目"),
          validators.Length(-1, 50, "確認してください(最大50文字)")],
     )
