@@ -1,34 +1,52 @@
 {% extends "common.html" %}
-{% block title %}迷子確認フォーム{% endblock %}
-{% block header %} 迷子確認フォーム{% endblock %}
+{% block title %}迷子発見フォーム{% endblock %}
+{% block header %}迷子発見フォーム{% endblock %}
 {% block main %}
-{% macro render_error(field) %}
-  <ul class=errors>
-    {% for error in field.errors %}
-      <font color='red'>{{ error }}</font>
-    {% endfor %}
-  </ul>
-{% endmacro %}
-<form id="searchpetform" method="post" enctype="multipart/form-data" >  
+  
+  {% macro render_error(field) %}
+    <ul class=errors>
+      {% for error in field.errors %}
+        <font color='red'>{{ error }}</font>
+      {% endfor %}
+    </ul>
+  {% endmacro %}
+  
+
+  <!--迷子発見フォーム-->
+  <form id="searchpetform" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
-    <table border="0" align="center">
-      <tbody>
-        <tr>
-        <th><label class="form-label ">県</label></th><td>{{ form.prefecture }}{{ render_error(form.prefecture) }}</td>
-        </tr>
-        <tr>
-        <th><label class="form-label">市</label></th><td>{{ form.city }}{{ render_error(form.city) }}</td>
-        </tr>
-        <tr height = "25%">
-        <th><label class="form-label">特徴</label></th><td>{{ form.features_description(rows='5', cols='30') }}{{ render_error(form.features_description) }}</td>
-        </tr>
-        <tr>
-          <th><label class="form-label">画像</label></th><td>{{ form.img }}{{ render_error(form.img) }}</td>
-          </tr>
-        <tr>
-        <td colspan="2">{{ form.sub }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </form>
+    <div class="row">
+      <div class='col-md-3'>
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">都道府県</label>
+          <input class="form-control" type="text" name="prefecture" placeholder="ペットを発見した都道府県を入力" aria-label="都道府県" required>
+        </div>
+      </div>
+      <div class='col-md-3'>
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">市町村</label>
+          <input class="form-control" type="text" name="city" placeholder="ペットを発見した市町村を入力" aria-label="市町村" required>
+        </div>
+      </div>
+      <div class='col-md-6'>
+        <div class="mb-3">
+          <label for="formFile" class="form-label">ペットの画像</label>
+          <input class="form-control" type="file" name="img" accept="image/*" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">ペットの特徴や様子</label>
+        <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力" required></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="d-grid">
+          <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>送信 (迷子動物の発見を申請する)</button>
+        </div>
+      </div>
+    </div>  
+  </form>  
+  
 {% endblock %}
