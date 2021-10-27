@@ -4,49 +4,90 @@
 
 {%block main%}
 
-    <a class="btn btn-outline-secondary me-1" href="/petInfo" role="button">ペットの登録</a>
-    <a class="btn btn-outline-secondary me-1" href="/memberInfoFix" role="button">会員情報の修正</a>
-
-
-    <div class="table-responsive">  
-        <table class="table table-bordered">
-                <tr>
-                    <th>迷子</th><th>名前</th><th>特徴</th>
-                </tr>
-            {% for pet in pet_list %}
-                <tr>
-                    <td>
-                        {% if pet.lost_flag %}
-                            <a href="/thread/{{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}">捜索中</a>
-                        {% else %}
-                            <form id="mypageform" method="post">
-                                {{ form.csrf_token }}
-                                <input type="hidden" name="pet_id" value={{pet.pet_id}}>
-                                {{ form.lost }}
-                            </form>
-                        {% endif %}
-                    </td>
-                    <td>{{pet.pet_name}}</td><td style="white-space:pre-wrap;">{{pet.features_description}}</td>
-                </tr>
-            {% endfor %}
-        </table>
+    <div class="row">
+        <h3 class="pb-2 font-italic border-bottom">登録済み<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>一覧</h3>
     </div>
-    {% for thread in threadlist %}
-        <div class="card-decks container-">
-            <div class="card border-secondary bg-white mb-3 rounded">
-                <div class="card-header h3">
-                    <img src="static/images/{{thread.img_source}}.jpg" class="rounded img-fluid">
-                </div>
-                <div class="card-body">
-                    <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-                    <a href="/thread/{{thread.thread_id}}">返信</a>
-                    <form id="mypagedelform" method="post">
-                        {{ delform.csrf_token }}
-                        <input type="hidden" name="thread_id" value={{thread.thread_id}}>
-                        {{ delform.delete }}
-                    </form>
-                </div>
+
+
+    <div class="row pb-4">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" nowrap>ペットの名前</th>
+                            <th scope="col" nowrap>特徴</th>
+                            <th scope="col" nowrap>迷子申請</th>
+                        </tr>
+                    </thead>
+                
+
+                    <tbody>
+                        {% for pet in pet_list %}
+                            <tr>
+                                <td nowrap>{{pet.pet_name}}</td>
+                                <td style="white-space:pre-wrap;">{{pet.features_description}}</td>
+                                <td nowrap>
+                                    {% if pet.lost_flag %}
+                                        <a href="/thread/{{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}">捜索中</a>
+                                    {% else %}
+                                        <form id="mypageform" method="post">
+                                            {{ form.csrf_token }}
+                                            <input type="hidden" name="pet_id" value={{pet.pet_id}}>
+                                            {{ form.lost }}
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        <!--新規ペット登録-->     
+                        <tr>
+                            <td colspan=3>
+                                <a class="btn btn-outline-secondary me-1 btn-sm" href="/petInfo" role="button">
+                                    ペットの新規登録はこちら
+                                </a>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
             </div>
         </div>
-    {% endfor %}
+    </div>
+    
+    
+    <div class='row'>
+        <h3 class="pt-4 pb-1 font-italic border-bottom">
+          あなたの投稿
+        </h3>
+    </div>
+
+
+    <div class="row">
+        {% for thread in threadlist %}
+            <div class="card-decks container-">
+                <div class="card border-secondary bg-white mb-3 rounded">
+                    <div class="card-header h3">
+                        <img src="static/images/{{thread.img_source}}.jpg" class="rounded img-fluid">
+                    </div>
+                    <div class="card-body">
+                        <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+                        <a href="/thread/{{thread.thread_id}}">返信</a>
+                        <form id="mypagedelform" method="post">
+                            {{ delform.csrf_token }}
+                            <input type="hidden" name="thread_id" value={{thread.thread_id}}>
+                            {{ delform.delete }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+
+        <!-- 投稿一覧を表示　-->
+        {% include "posts.html"%}
+    </div>
+
+
 {%endblock%}

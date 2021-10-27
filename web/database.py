@@ -38,6 +38,14 @@ class User(flask_login.UserMixin, db.Model):
         self.prefecture = prefecture
         self.city = city
 
+    def update(self, user_nickname, user_fname, user_lname, tell, prefecture, city):
+        self.user_nickname = user_nickname
+        self.user_fname = user_fname
+        self.user_lname = user_lname
+        self.tell = tell
+        self.prefecture = prefecture
+        self.city = city
+
 
 class UserLogin(db.Model):
     email = db.Column(db.String(50), primary_key=True)  # メール
@@ -85,6 +93,7 @@ class SearchPet(db.Model):
     img_source = db.Column(db.String(100), nullable=False)  # 画像パス
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
+    email = db.Column(db.String(50), primary_key=True)  # 発見した人のメールアドレス
 
     def __init__(self, prefecture, city, features_description, img_source):
         self.prefecture = prefecture

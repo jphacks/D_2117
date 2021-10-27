@@ -1,15 +1,87 @@
 {% extends "common.html" %}
 {% block title %}リダイレクト{% endblock %}
-{% block header %}リダイレクト中{% endblock %}
+{% block header %}処理中{% endblock %}
 
 {% block js %}
-    {% if status == "logout" %}
-        alert("ログアウトしました。\n3秒後にページを移動します。");
-        setTimeout("location.href='/'",1000*3);
-    {% elif status == "threadsuccess" %}
-        alert("登録しました");
+    {% if status == "loginf" %}
+        alert("ログインに失敗しました。\n入力内容を確認してください。");
+        location.href="/login"
+    {% elif status == "logins" %}
+        alert("ログインしました。");
+        location.href="/"
+
+    {% elif status == "logout" %}
+        alert("ログアウトしました。");
+        location.href="/"
+
+    {% elif status == "mypagelf" %}
+        alert("迷子の登録に失敗しました。");
+        location.href="/myPage"
+    {% elif status == "mypagels" %}
+        alert("迷子登録しました。");
+        location.href="/myPage"
+
+    {% elif status == "mypagetf" %}
+        alert("削除に失敗しました。");
+        location.href="/myPage"
+    {% elif status == "mypagets" %}
+        alert("削除しました。");
+        location.href="/myPage"
+
+    {% elif status == "petinfof" %}
+        alert("登録に失敗しました。");
+        location.href="/petInfo"
+    {% elif status == "petinfos" %}
+        alert("登録しました。");
+        location.href="/myPage"
+
+    {% elif status == "memberinfof" %}
+        alert("登録に失敗しました。\n入力内容を確認してください。");
+        location.href="/memberInfo"
+    {% elif status == "memberinfos" %}
+        alert("登録しました。");
+        location.href="/login"
+
+    {% elif status == "memberinfofixf" %}
+        alert("登録に失敗しました。\n入力内容を確認してください。");
+        location.href="/memberInfoFix"
+    {% elif status == "memberinfofixs" %}
+        alert("登録しました。");
+        location.href="/memberInfoFix"
+
+    {% elif status == "threade1" %}
+        alert("ペットの名前を選択してください。");
+        location.href="/"
+    {% elif status == "threade2" %}
+        alert("画像を登録してください。");
+        location.href="/"
+
+    {% elif status == "threadf" %}
+        alert("登録に失敗しました。");
         location.href="/thread/{{next}}"
+    {% elif status == "threads" %}
+        alert("登録しました。");
+        location.href="/thread/{{next}}"
+
+    {% elif status == "searchpete1" %}
+        alert("画像を登録してください。");
+        location.href="/searchPet"
+    {% elif status == "searchpete2" %}
+        alert("エラーが発生しました。\n再度、登録して下さい。");
+        location.href="/searchPet"
+    {% elif status == "searchpete3" %}
+        alert("迷子登録されているペットはいません。");
+        location.href="/searchPet"
+
+    {% elif status == "searchpets" %}
+        alert("登録しました。");
+        location.href="/searchPet"
+
     {% else %}
         location.href="/"
     {% endif %}
 {% endblock %}
+
+return redirect("/redirect?status=threadsuccess&next="+str(reply_id))
+alert("ログアウトしました。\n3秒後にページを移動します。");
+setTimeout("location.href='/'",1000*3);
