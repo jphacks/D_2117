@@ -31,6 +31,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect("/login")
+
+
 @app.route("/login", methods=["GET", "POST"])  # ログイン
 def login():
     if flask_login.current_user.is_authenticated:  # すでにログイン中なら/に飛ばす
@@ -148,7 +153,7 @@ def memberInfo():
         while flag:  # 確認用文字列が既に使われていないか確認
             email_check = str_gen()
             if UserLogin.query.filter_by(email_check=email_check).first() is None:
-                falg = 1
+                flag = 0
         new_user = User(form.user_nickname.data, form.user_fname.data, form.user_lname.data,
                         form.email.data, form.tell.data, form.prefecture.data, form.city.data)
         new_user_pass = UserLogin(
@@ -159,8 +164,8 @@ def memberInfo():
             db.session.commit()
         except:
             return redirect("/redirect?status=memberinfof")
-        message = "FindPetMeにご登録いただきありがとうございます。\n以下のURLより登録を完了させてください。\nhttp://date.ddns.net:7777/email?check=" + \
-            email_check+"/nまた、心当たりのない場合はメールの削除をお願いします。"
+        message = "FindPet.Meにご登録いただきありがとうございます。\n以下のURLより登録を完了させてください。\nhttp://date.ddns.net:7777/email?check=" + \
+            email_check+"\nまた、心当たりのない場合はメールの削除をお願いします。"
         send_mail(form.email.data, message)
         return redirect("/redirect?status=memberinfos")
     return render_template("memberInfo.html", form=form)
@@ -274,7 +279,7 @@ def send_mail(to_addr='ddn.developer@gmail.com', message="配信テスト"):  # 
     from_addr = 'ddn.developer@gmail.com'
 
     msg = MIMEText(message, "plain", 'utf-8')
-    msg['Subject'] = 'FindPetMeからのお知らせ'
+    msg['Subject'] = 'FindPet.Meからのお知らせ'
     msg['From'] = from_addr
     msg['To'] = to_addr
 

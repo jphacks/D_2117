@@ -18,7 +18,7 @@
 
                 <!-- MyPageの場合は投稿削除フラグを表示-->
                 {%- if request.path == "/myPage" %}
-                <div class="card-footer">
+                <div class="card-footer bg-transparent">
                     <!--変身ボタン-->
                     <div class="d-grid pb-3">
                         <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
@@ -35,7 +35,7 @@
                     </form>
                 </div>
                 {% else %}
-                <div class="card-footer">
+                <div class="card-footer bg-transparent">
                     <div class="d-grid">
                         <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
                     </div>

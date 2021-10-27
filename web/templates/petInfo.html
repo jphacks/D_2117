@@ -9,54 +9,33 @@
     {% endfor %}
   </ul>
 {% endmacro %}
-  <form id="petinfoform" method="post" >  
-    {{ form.csrf_token }}
-      <table border="0" align="center">
-        <tbody>
-          <tr>
-            <th><label class="form-label ">ペットの名前</label></th>
-            <td>{{ form.pet_name }}{{ render_error(form.pet_name) }}</td>
-          </tr>
-          <tr>
-            <th><label class="form-label">ペットの特徴</label></th>
-            <td>{{ form.features_description }}{{ render_error(form.features_description) }}</td>
-          </tr>
-          <tr>
-            <td colspan="2">{{ form.sub }}</td>
-          </tr>
-        </tbody>
-      </table>
-  </form>
 
 
   <form id="searchpetform" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
-    <div class="row">
-      <div class='col-md-3'>
+      <div class="row">
         <div class="mb-3">
           <label for="exampleFormControlTextarea1" class="form-label">ペットの名前</label>
-          <input class="form-control" type="text" name="prefecture" placeholder="ペットを発見した都道府県を入力" aria-label="都道府県" required>
+          <input class="form-control" type="text" name="pet_name" placeholder="ペットの名前を入力してください" aria-label="都道府県" required>
         </div>
       </div>
 
-      <div class="mb-3">
-        <label for="exampleFormControlTextarea1" class="form-label">ペットの特徴</label>
-        <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力" required></textarea>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <div class="d-grid">
-          <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>送信（ペットを登録する）</button>
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">ペットの特徴</label>
+          <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力してください" required></textarea>
         </div>
       </div>
-    </div>  
+
+      <div class="row">
+        <div class="col">
+          <div class="d-grid">
+            <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>送信（ペットを登録する）</button>
+          </div>
+        </div>
+      </div>  
+
   </form>  
-
-
-
-
 
 
 {% endblock %}

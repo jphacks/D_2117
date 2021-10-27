@@ -51,4 +51,67 @@
     </tbody>
   </table>
 </form>
+
+
+
+<form name="memberinfoform" id="memberinfoform" method="post" enctype="multipart/form-data">
+  {{ form.csrf_token }}
+    <!--ニックネーム・氏名-->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">ニックネーム</label>
+          <input class="form-control" type="text" maxlength="10"　name="user_nickname" placeholder="ニックネーム（10文字以内）" aria-label="nickname" required>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <label for="exampleFormControlTextarea1" class="form-label">氏名</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="氏" maxlength="10"　　name="user_lname"　aria-label="user_lname" required>
+          <input type="text" class="form-control" placeholder="名" maxlength="10"　　name="user_lname"　aria-label="user_fname" required>
+        </div>
+      </div>
+    </div>
+
+    <!--電話番号・メールアドレス・パスワード-->
+    <div class="row">
+      <div class="col-md-4">
+        <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" aria-describedby="email" name="email" required>
+      </div>
+      <div class="col-md-4">
+        <label for="exampleInputEmail1" class="form-label">電話番号</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" maxlength="11" aria-describedby="emailHelp" required>
+      </div>
+      <div class="col-md-4">
+        <label for="exampleInputPassword1" class="form-label">パスワード</label>
+        <input type="password" class="form-control" maxlength="50" id="exampleInputPassword1" required>
+      </div>
+    </div>
+
+    <!--都道府県・市町村-->
+    <div class="row">
+      <div class="col-md-6">
+          <label for="exampleFormControlTextarea1" class="form-label">都道府県</label>
+          <input class="form-control" type="text" maxlength="10"　name="user_nickname" placeholder="都道府県" aria-label="nickname" required>
+      </div>
+      <div class="col-md-6">
+          <label for="exampleFormControlTextarea1" class="form-label">市町村</label>
+          <input class="form-control" type="text" maxlength="10"　name="user_nickname" placeholder="市町村" aria-label="nickname" required>
+      </div>
+    </div>
+
+    <!--送信-->
+    <div class="row">
+      <div class="col">
+        <div class="d-grid">
+          <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>この内容で会員登録する</button>
+        </div>
+      </div>
+    </div>  
+
+</form>  
+
+
+
 {% endblock %}
