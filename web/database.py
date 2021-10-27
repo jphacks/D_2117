@@ -95,13 +95,14 @@ class SearchPet(db.Model):
     img_source = db.Column(db.String(100), nullable=False)  # 画像パス
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
-    email = db.Column(db.String(50), primary_key=True)  # 発見した人のメールアドレス
+    email = db.Column(db.String(50))  # 発見した人のメールアドレス
 
-    def __init__(self, prefecture, city, features_description, img_source):
+    def __init__(self, prefecture, city, features_description, img_source, email):
         self.prefecture = prefecture
         self.city = city
         self.features_description = features_description
         self.img_source = img_source
+        self.email = email
 
 
 class Thread(db.Model):

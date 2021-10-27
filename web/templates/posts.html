@@ -13,18 +13,25 @@
           {% endif %}
               <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
               <div class="card-body">
-                <div class="">
-                  ペットのお名前 <a href="/pet/{{thread.pet_id}}">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
+                <div class="text-muted pb-2">
+                  <ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>のお名前 
+                  <a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
                 </div>
-                <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+                <div class="pb-4">
+                  <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+                </div>
               </div>
 
               <!-- MyPageの場合は投稿削除フラグを表示-->
               {%- if request.path == "/myPage" %}
               <div class="card-footer bg-transparent">
-                  <!--変身ボタン-->
+                  <!--返信ボタン-->
                   <div class="d-grid pb-3">
+                    {% if thread.lost_flag %}
+                      <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                    {% else %}
                       <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                    {% endif %}
                   </div>
                   <!--削除ボタン-->
                   <form id="mypagedelform" method="post">
@@ -40,7 +47,11 @@
               {% else %}
               <div class="card-footer bg-transparent">
                   <div class="d-grid">
+                    {% if thread.lost_flag %}
+                    <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                    {% else %}
                       <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                    {% endif %}
                   </div>
               </div>
               {% endif %}

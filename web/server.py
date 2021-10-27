@@ -89,10 +89,9 @@ def myPage():
         update_pet.lost()  # 迷子申請があったら迷子登録
 
         # 迷子捜索用のスレッド
-        message = "名前："+update_pet.pet_name+"\n特徴：\n"+update_pet.features_description + \
-            "\n迷子登録された時刻：" + \
-            update_pet.lost_time.strftime(
-                "%y/%m/%d %H:%M")+"\n\n下の返信より情報提供お願いします。"
+        message = "【特徴】\n"+update_pet.features_description + \
+            "\n\n【迷子登録された時刻】\n" + \
+            update_pet.lost_time.strftime("%y/%m/%d %H:%M")
         last_thread = Thread.query.filter_by(
             pet_id=form.pet_id.data).order_by(Thread.thread_id.desc()).first()
         if last_thread is not None:
@@ -259,7 +258,7 @@ def get_cos_sim(v1, v2):
 
 
 def predict_pet(vector1, lostpetlist):  # 発見されたペットのベクトル, 迷子の犬の一覧
-    max_ans = 1
+    max_ans = 2
     ans = np.zeros((max_ans, 2))
     for pet_id in lostpetlist:
         for npy in glob.glob("./web/static/vector/"+str(pet_id)+"/*"):
@@ -417,10 +416,14 @@ def searchPet():
                 db.session.commit()
             except:
                 return redirect("/redirect?status=searchpete2")
+            mail = User.query.filter_by(id=lost_thread.user_id).first().email
+            message += "\n\n詳細\nhttp://date.ddns.net:7777/thread/" + \
+                str(lost_thread.thread_id)
+            send_mail(mail, message)
 
         del img  # メモリ対策
         new_searchpet = SearchPet(
-            form.prefecture.data, form.city.data, form.features_description.data, img_url)
+            form.prefecture.data, form.city.data, form.features_description.data, img_url, form.email.data)
         try:
             db.session.add(new_searchpet)
             db.session.commit()

@@ -22,5 +22,11 @@ class SearchPetForm(flask_wtf.FlaskForm):
          validators.Length(-1, 20, "最大20文字")],
     )
 
+    email = StringField(
+        'email',
+        [validators.DataRequired("必須項目"),
+         validators.Length(-1, 50, "確認してください(最大50文字)")],
+    )
+
     img = FileField('img')
     sub = SubmitField("登録")

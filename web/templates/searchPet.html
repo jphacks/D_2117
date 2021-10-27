@@ -29,6 +29,12 @@
         <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力" required></textarea>
       </div>
     </div>
+    {% if current_user.is_authenticated %}
+    <div class="col-md-4">
+        <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email">
+    </div>
+    {% endif %}
 
     <div class="row">
       <div class="col">
