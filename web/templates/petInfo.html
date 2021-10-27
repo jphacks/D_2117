@@ -1,0 +1,41 @@
+{% extends "common.html" %}
+{% block title %}ペット登録{% endblock %}
+{% block header %}ペット登録フォーム{% endblock %}
+{% block main %}
+{% macro render_error(field) %}
+  <ul class=errors>
+    {% for error in field.errors %}
+      <font color='red'>{{ error }}</font>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+
+  <form id="searchpetform" method="post" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">ペットの名前</label>
+          <input class="form-control" type="text" name="pet_name" placeholder="ペットの名前を入力してください" aria-label="都道府県" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">ペットの特徴</label>
+          <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力してください" required></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="d-grid">
+            <button type="submit" name="sub" class="btn btn-outline-primary" color=#f5deb3>送信（ペットを登録する）</button>
+          </div>
+        </div>
+      </div>  
+
+  </form>  
+
+
+{% endblock %}

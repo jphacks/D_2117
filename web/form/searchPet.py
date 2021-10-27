@@ -21,5 +21,6 @@ class SearchPetForm(flask_wtf.FlaskForm):
         [validators.DataRequired("必須項目"),
          validators.Length(-1, 20, "最大20文字")],
     )
-    #img = FileField('img', [validators.regexp(u'^[^/\\]\.jpg$')])
+
+    img = FileField('img')
     sub = SubmitField("登録")

@@ -11,14 +11,21 @@
             <!-- ページ ボタン -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">トップ</a>
+                    <a class="nav-link" aria-current="page" href="/">タイムライン</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/searchPet">迷子発見</a>
                 </li>
                 {% if current_user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/myPage">マイページ</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        マイページ
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="background-color: #f5deb3">
+                        <li><a class="dropdown-item" href="/myPage">マイページトップ</a></li>
+                        <li><a class="dropdown-item" href="/petInfo">ペットの登録</a></li>
+                        <li><a class="dropdown-item" href="/memberInfoFix">会員情報の修正</a></li>
+                    </ul>
                 </li>
                 {% endif %}
             </ul>
@@ -26,6 +33,10 @@
             <!-- ログイン / ログアウト / 新規登録 -->
             <div class="d-flex">
                 {% if current_user.is_authenticated %}
+                <div class="d-flex align-items-center pe-2 text-secondary">
+                    {{current_user.user_nickname}}さんようこそ！
+                </div>
+
                 <a class="btn btn-outline-secondary me-1" href="/logout" role="button">ログアウト</a>
                 {% else %}
                 <a class="btn btn-outline-secondary me-1" href="/login" role="button">ログイン</a>

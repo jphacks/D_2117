@@ -5,7 +5,7 @@
 {% macro render_error(field) %}
   <ul class=errors>
     {% for error in field.errors %}
-      <li class="error">{{ error }}</li>
+      <font color='red'>{{ error }}</font>
     {% endfor %}
   </ul>
 {% endmacro %}

@@ -1,0 +1,46 @@
+{% extends "common.html" %}
+{% block title %}会員登録修正{% endblock %}
+{% block header %}会員登録修正ページ{% endblock %}
+{% block main %}
+{% macro render_error(field) %}
+  <ul class=errors>
+    {% for error in field.errors %}
+      <font color='red'>{{ error }}</font>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+<form name="memberinfofixform" id="memberinfofixform" method="post" >  
+  {{ form.csrf_token }}
+  <table border="0" align="center">
+    <tbody>
+      <tr>
+        <th><label class="form-label ">ニックネーム</label></th>
+        <td>{{ form.user_nickname }}{{ render_error(form.user_nickname) }}</td>
+      </tr>
+      <tr>
+        <th><label class="form-label">苗字</label></th>
+        <td>{{ form.user_lname }}{{ render_error(form.user_lname) }}</td>
+      </tr>
+      <tr>
+        <th><label class="form-label">名前</label></th>
+        <td>{{ form.user_fname }}{{ render_error(form.user_fname) }}</td>
+      </tr>
+      <tr>
+        <th><label class="form-label">電話番号</label></th>
+        <td>{{ form.tell }}{{ render_error(form.tell) }}</td>
+      </tr>
+      <tr>
+        <th><label class="form-label">県</label></th>
+        <td>{{ form.prefecture }}{{ render_error(form.prefecture) }}</td>
+      </tr>
+      <tr>
+        <th><label class="form-label">市</label></th>
+        <td>{{ form.city }}{{ render_error(form.city) }}</td>
+      </tr>
+      <tr>
+        <td colspan="2">{{ form.sub }}</td>
+      </tr>
+    </tbody>
+  </table>
+</form>
+{% endblock %}
