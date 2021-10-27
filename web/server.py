@@ -125,8 +125,10 @@ def myPage():
     threadlist = Thread.query.filter_by(
         user_id=flask_login.current_user.id, del_flag=False).order_by(Thread.thread_id.desc()).all()
     lostthread = Thread.query.filter_by(lost_flag=True, del_flag=False)
+    petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name).filter_by(
+        user_id=flask_login.current_user.id)
 
-    return render_template("/myPage.html", form=form, delform=delform, pet_list=pet_list, threadlist=threadlist, lostthread=lostthread)
+    return render_template("/myPage.html", form=form, delform=delform, pet_list=pet_list, threadlist=threadlist, lostthread=lostthread, petnamelist=petnamelist)
 
 
 @app.route("/petInfo", methods=["GET", "POST"])  # ペットの登録
@@ -292,9 +294,7 @@ def send_mail(to_addr='ddn.developer@gmail.com', message="配信テスト"):  # 
 @ app.route("/", methods=["GET", "POST"])
 @ app.route("/thread/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
 def thread(reply_id="0"):
-    if reply_id.isdigit() == False:
-        reply_id = 0
-    if int(reply_id) < 0:
+    if reply_id.isdigit() == False or int(reply_id) < 0:
         reply_id = 0
     reply_id = int(reply_id)
 
@@ -302,6 +302,7 @@ def thread(reply_id="0"):
         thread_id=reply_id, del_flag=False).first()
     threadlist = Thread.query.filter_by(reply_id=reply_id, del_flag=False)
     nicknamelist = User.query.with_entities(User.id, User.user_nickname)
+    petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name)
 
     if reply_id == 0:
         threadlist = threadlist.order_by(Thread.thread_id.desc()).all()
@@ -366,7 +367,20 @@ def thread(reply_id="0"):
             except:
                 return redirect("/redirect?status=threadf&next="+str(reply_id))
             return redirect("/redirect?status=threads&next="+str(reply_id))
-    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop, nicknamelist=nicknamelist)
+    return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop, nicknamelist=nicknamelist, petnamelist=petnamelist)
+
+
+@ app.route("/pet/<pet_id>", methods=["GET"])
+def pet(pet_id):
+    if pet_id.isdigit() == False or int(pet_id) <= 0:
+        return redirect("/")
+    pet_id = int(pet_id)
+
+    pet_thread = Thread.query.filter_by(pet_id=pet_id).all()
+    petnamelist = Pet.query.with_entities(
+        Pet.pet_id, Pet.pet_name).filter_by(pet_id=pet_id)
+
+    return render_template("pet.html", threadlist=pet_thread, petnamelist=petnamelist)
 
 
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し

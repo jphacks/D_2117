@@ -2,14 +2,6 @@
 {% block title %}ペット登録{% endblock %}
 {% block header %}ペット登録フォーム{% endblock %}
 {% block main %}
-{% macro render_error(field) %}
-  <ul class=errors>
-    {% for error in field.errors %}
-      <font color='red'>{{ error }}</font>
-    {% endfor %}
-  </ul>
-{% endmacro %}
-
 
   <form id="searchpetform" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
@@ -34,8 +26,6 @@
           </div>
         </div>
       </div>  
-
   </form>  
-
-
+  
 {% endblock %}

@@ -1,15 +1,7 @@
 {% extends "common.html" %}
 {% block title %}タイムライン{% endblock %}
 {% block header %}タイムライン{% endblock %}
-{% block main %}
-  {% macro render_error(field) %}
-    <ul class=errors>
-      {% for error in field.errors %}
-        <font color='red'>{{ error }}</font>
-      {% endfor %}
-    </ul>
-  {% endmacro %}
-      
+{% block main %}      
   <!--返信ページ-->
   {% if reply_id != 0 %}
     <div class='row'>

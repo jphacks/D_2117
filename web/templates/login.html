@@ -2,13 +2,6 @@
 {% block title  %}ログイン{% endblock %}
 {% block header %}ログイン{% endblock %}
 {% block main %}
-{% macro render_error(field) %}
-  <ul class=errors>
-    {% for error in field.errors %}
-      <font color='red'>{{ error }}</font>
-    {% endfor %}
-  </ul>
-{% endmacro %}
 
   <form id="loginform" method="post" >
     {{ form.csrf_token }}

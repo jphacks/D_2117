@@ -2,105 +2,48 @@
 {% block title %}会員登録修正{% endblock %}
 {% block header %}会員登録修正ページ{% endblock %}
 {% block main %}
-{% macro render_error(field) %}
-  <ul class=errors>
-    {% for error in field.errors %}
-      <font color='red'>{{ error }}</font>
-    {% endfor %}
-  </ul>
-{% endmacro %}
-<form name="memberinfofixform" id="memberinfofixform" method="post" >  
-  {{ form.csrf_token }}
-  <table border="0" align="center">
-    <tbody>
-      <tr>
-        <th><label class="form-label ">ニックネーム</label></th>
-        <td>{{ form.user_nickname }}{{ render_error(form.user_nickname) }}</td>
-      </tr>
-      <tr>
-        <th><label class="form-label">苗字</label></th>
-        <td>{{ form.user_lname }}{{ render_error(form.user_lname) }}</td>
-      </tr>
-      <tr>
-        <th><label class="form-label">名前</label></th>
-        <td>{{ form.user_fname }}{{ render_error(form.user_fname) }}</td>
-      </tr>
-      <tr>
-        <th><label class="form-label">電話番号</label></th>
-        <td>{{ form.tell }}{{ render_error(form.tell) }}</td>
-      </tr>
-      <tr>
-        <th><label class="form-label">県</label></th>
-        <td>{{ form.prefecture }}{{ render_error(form.prefecture) }}</td>
-      </tr>
-      <tr>
-        <th><label class="form-label">市</label></th>
-        <td>{{ form.city }}{{ render_error(form.city) }}</td>
-      </tr>
-      <tr>
-        <td colspan="2">{{ form.sub }}</td>
-      </tr>
-    </tbody>
-  </table>
-</form>
-
 
 <div class="row">
   <form name="memberinfofixform" id="memberinfofixform" method="post">
+    
     {{ form.csrf_token }}
-      <!--ニックネーム・氏名-->
       <div class="row">
         <div class="col-md-4">
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">ニックネーム</label>
-            <input class="form-control" type="text" value="くぼこー" maxlength="10" name="user_nickname" placeholder="ニックネーム（10文字以内）" aria-label="nickname" required>
+            <input class="form-control" type="text" value="{{ form.user_nickname.data }}" maxlength="10" name="user_nickname" aria-label="nickname" required>
           </div>
         </div>
         <div class="col-md-8">
           <label for="exampleFormControlTextarea1" class="form-label">氏名</label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="氏" maxlength="10"  name="user_lname" aria-label="user_lname" required>
-            <input type="text" class="form-control" placeholder="名" maxlength="10"  name="user_lname" aria-label="user_fname" required>
+            <input type="text" class="form-control" value="{{ form.user_lname.data }}" maxlength="10" name="user_lname" aria-label="user_lname" required>
+            <input type="text" class="form-control" value="{{ form.user_fname.data }}" maxlength="10" name="user_fname" aria-label="user_fname" required>
           </div>
         </div>
       </div>
 
-      <!--電話番号・メールアドレス・パスワード-->
-      <div class="row">
-        <div class="col-md-4">
-          <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
-          <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" aria-describedby="email" name="email" required>
-        </div>
+      <div class="row mb-4">
         <div class="col-md-4">
           <label for="exampleInputEmail1" class="form-label">電話番号</label>
-          <input type="tel" class="form-control" placeholder="08011112222" id="exampleInputEmail1" maxlength="11" aria-describedby="emailHelp" name="tell" required>
+          <input type="tel" class="form-control" value="{{ form.tell.data }}" id="exampleInputEmail1" maxlength="11" name="tell" required>
         </div>
         <div class="col-md-4">
-          <label for="exampleInputPassword1" class="form-label">パスワード</label>
-          <input type="password" class="form-control" placeholder="s3lzjadfhzcave" maxlength="50" id="exampleInputPassword1" required name="password">
-        </div>
-      </div>
-
-      <!--都道府県・市町村-->
-      <div class="row">
-        <div class="col-md-6">
             <label for="exampleFormControlTextarea1" class="form-label">都道府県</label>
-            <input class="form-control" type="text" maxlength="10" name="prefecture" placeholder="都道府県" aria-label="prefecture" required>
+            <input class="form-control" type="text" maxlength="10" name="prefecture" value="{{ form.prefecture.data }}" aria-label="prefecture" required>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label for="exampleFormControlTextarea1" class="form-label">市町村</label>
-            <input class="form-control" type="text" maxlength="10" name="city" placeholder="市町村" aria-label="city" required>
+            <input class="form-control" type="text" maxlength="20" name="city" value="{{ form.city.data }}" aria-label="city" required>
         </div>
       </div>
-
-      <!--送信-->
       <div class="row">
         <div class="col">
           <div class="d-grid">
             <button type="submit" name="sub" class="btn btn-outline-primary">この内容で会員情報を修正する</button>
           </div>
         </div>
-      </div>  
+      </div>
   </form>
 </div>
 

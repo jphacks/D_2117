@@ -1,0 +1,6 @@
+{% extends "common.html" %}
+{% block title %}{{petnamelist.first().pet_name}} さんの詳細{% endblock %}
+{% block header %}{{petnamelist.first().pet_name}} さんの詳細{% endblock %}
+{% block main %}
+    {% include "posts.html"%}
+{% endblock %}
