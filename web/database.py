@@ -113,18 +113,20 @@ class Thread(db.Model):
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
     img_source = db.Column(db.String(100), default=None)  # 画像パス
     message = db.Column(db.String(500))  # メッセージ
-    lost_flag = db.Column(db.Boolean, default=False)
+    lost_flag = db.Column(db.Boolean, default=False)  # 迷子フラグ
+    found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
     total_point = db.Column(db.Integer, default=0)  # スレッド内の総移動数
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
 
-    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False):
+    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False, found_flag=False):
         self.user_id = user_id
         self.pet_id = pet_id
         self.reply_id = reply_id
         self.img_source = img_source
         self.message = message
         self.lost_flag = lost_flag
+        self.found_flag = found_flag
 
 
 db.create_all()

@@ -8,6 +8,11 @@
               <div class="mb-2 badge bg-warning text-wrap fs-3">
                   迷子速報！
               </div>
+          {% elif thread.found_flag %}
+          <div class="card h-100 p-3 border-success">
+              <div class="mb-2 badge bg-success text-wrap fs-3">
+                  迷子発見速報！
+              </div>
           {% else %}
           <div class="card h-100 p-3">
           {% endif %}
@@ -29,6 +34,8 @@
                   <div class="d-grid pb-3">
                     {% if thread.lost_flag %}
                       <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                    {% elif thread.found_flag %}
+                      <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
                     {% else %}
                       <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
                     {% endif %}
@@ -49,6 +56,8 @@
                   <div class="d-grid">
                     {% if thread.lost_flag %}
                     <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                    {% elif thread.found_flag %}
+                      <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
                     {% else %}
                       <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
                     {% endif %}

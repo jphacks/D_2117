@@ -24,17 +24,22 @@
           <input class="form-control" type="file" name="img" accept="image/*" required>
         </div>
       </div>
+
+      {% if current_user.is_authenticated == False %}
+      <div class="row mb-3">
+        <div class="col-md-12">
+            <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email"　required>
+        </div>
+      </div>
+      {% endif %}
+
       <div class="mb-3">
         <label for="exampleFormControlTextarea1" class="form-label">ペットの特徴や様子</label>
         <textarea class="form-control" name="features_description" rows="3" maxlength="400" placeholder="ペットの特徴や様子を入力" required></textarea>
       </div>
     </div>
-    {% if current_user.is_authenticated %}
-    <div class="col-md-4">
-        <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
-        <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email">
-    </div>
-    {% endif %}
+
 
     <div class="row">
       <div class="col">

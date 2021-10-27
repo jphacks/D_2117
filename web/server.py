@@ -394,6 +394,7 @@ def searchPet():
         filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
         img_url = os.path.join('search', filename)
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
+        del img  # メモリ対策
 
         # AI関連の記述する部分
         try:
@@ -403,12 +404,15 @@ def searchPet():
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
+        found_message = f"迷子が {form.prefecture.data} {form.city.data} 発見されました。\n\n【発見者のコメント】\n{form.features_description.data}\n\n【AIの予測結果】\n"
+
         for pet_id, sim in predict_pet(vector, lostpetlist):
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, lost_flag=True).first()
             if lost_thread is None:
                 return redirect("/redirect?status=searchpete3")
             message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見しました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
+            found_message += f"類似度：{sim*100:.2f}% http://date.ddns.net:7777/thread/{lost_thread.thread_id} \n"
             new_thread = Thread(1, None, lost_thread.thread_id,
                                 img_url, message)
             try:
@@ -421,10 +425,18 @@ def searchPet():
                 str(lost_thread.thread_id)
             send_mail(mail, message)
 
-        del img  # メモリ対策
+        found_thread = Thread(1, None, 0, img_url,
+                              found_message, found_flag=True)
+
+        if flask_login.current_user.is_authenticated:
+            email = flask_login.current_user.email
+        else:
+            email = form.email.data
+
         new_searchpet = SearchPet(
-            form.prefecture.data, form.city.data, form.features_description.data, img_url, form.email.data)
+            form.prefecture.data, form.city.data, form.features_description.data, img_url, email)
         try:
+            db.session.add(found_thread)
             db.session.add(new_searchpet)
             db.session.commit()
         except:
