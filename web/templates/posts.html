@@ -22,6 +22,17 @@
               </div>
             </div>
           {% endif %}
+        
+          <!-- MyPageの場合は投稿削除フラグを表示-->
+          {%- if request.path == "/myPage" %}
+            <form id="mypagedelform" method="post">
+                {{ delform.csrf_token }}
+                <!--<input type="hidden" name="thread_id" value={{thread.thread_id}}>-->
+                <button type="hidden" class="btn btn-primary"　name="thread_id" value={{thread.thread_id}}>削除</button>
+                {{ delform.delete }}
+            </form>
+          {% endif %}
+          
         </div>
       {% endfor %}
     </div>

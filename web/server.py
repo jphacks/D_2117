@@ -9,6 +9,9 @@ import os
 import glob
 import numpy as np
 import smtplib
+from email.mime.text import MIMEText
+import secrets
+import string
 
 """共有部分"""
 
@@ -63,6 +66,11 @@ def logout():
 
 
 """ユーザー周り"""
+
+
+def str_gen(size=200):
+    chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    return ''.join(secrets.choice(chars) for x in range(size))
 
 
 @ app.route("/myPage", methods=["GET", "POST"])  # マイページ
@@ -162,7 +170,7 @@ def memberInfoFix():
         except:
             return redirect("/redirect?status=memberinfofixf")
         return redirect("/redirect?status=memberinfofixs")
-    form.user_nickname.data = now_user.user_nickname  # 複製
+    form.user_nickname.data = now_user.user_nickname
     form.user_fname.data = now_user.user_fname
     form.user_lname.data = now_user.user_lname
     form.tell.data = now_user.tell
@@ -233,6 +241,21 @@ def predict_pet(vector1, lostpetlist):  # 発見されたペットのベクト�
                     ans[0] = (pet_id, sim)
             ans = ans[np.argsort(ans[:, 1])]  # 類似度を昇順にソート
     return zip(ans[:, 0][::-1], ans[:, 1][::-1])
+
+
+def send_mail(to_addr='ddn.developer@gmail.com', message="配信テスト"):  # メールの配信
+    # 送受信先
+    from_addr = 'ddn.developer@gmail.com'
+
+    msg = MIMEText(message, "plain", 'utf-8')
+    msg['Subject'] = 'FindPetMeからのお知らせ'
+    msg['From'] = from_addr
+    msg['To'] = to_addr
+
+    with smtplib.SMTP_SSL(host="smtp.gmail.com", port=465) as smtp:
+        smtp.login("ddn.developer@gmail.com", secret['db']['pass'])
+        smtp.send_message(msg)
+        smtp.quit()
 
 
 @ app.route("/", methods=["GET", "POST"])
