@@ -8,7 +8,7 @@
 現在では迷子になった際の対処法として、マイクロチップの埋め込みや迷子礼などの方法があります。<br>
 しながらこれらの方法はまだ普及しておらず、対策としては不十分です。<br>
 私達は迷子のペットを探すプラットフォームとして、<br>
-「周囲の人々による<span style="background: linear-gradient(transparent 80%, yellow 0%);">SNS</span>×<span style="background: linear-gradient(transparent 80%, yellow 0%);">AI</span>マッチング」による<span style="background: linear-gradient(transparent 80%, yellow 0%);">【迷子のペットを探し出すアプリ】</span>を開発しようと考えました。
+「周囲の人々による<font color="red">SNS</font>×<font color="red">AI</font>マッチング」による<font color="red">【迷子のペットを探し出すアプリ】</font>を開発しようと考えました。
 ### 製品説明（具体的な製品の説明）
 ### 特長
 ####1. 特長1
