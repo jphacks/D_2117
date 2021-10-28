@@ -2,6 +2,7 @@
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 
 ## 製品概要
+[FindPet.Me Webページ](http://date.ddns.net:7777/)
 ### 背景(製品開発のきっかけ、課題等）
 日本における犬猫の飼育数は約2000万匹とされており、人々は動物と共存しています。<br>
 そんな中、毎年多くのペットが路上を徘徊していたり、逃い込んできたりして保護されています。<br>
@@ -30,12 +31,18 @@
 * 
 
 #### フレームワーク・ライブラリ・モジュール
-* 
-* 
+- Backend
+    - App : Flask
+    - Web server : Nginx
+    - AI API : PyTorch, Flask
+- Frontend
+    - Web design : HTML, Bootstrap
 
 #### デバイス
-* 
-* 
+- Webサーバー
+    - Windowsサーバー(オンプレミス)
+- APIサーバー
+    - Windowsサーバー(オンプレミス)
 
 ### 独自技術
 #### 犬画像を「画像分析AI(人工知能)」が分析し、犬同士の類似度を計算する技術
