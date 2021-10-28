@@ -177,6 +177,8 @@ def email():
         return redirect("/redirect?status=emailf")
     check_user = UserLogin.query.filter_by(
         email_check=email_check).one_or_none()
+    if check_user is None:
+        return redirect("/")
     check_user.email_check = None
     try:
         db.session.add(check_user)
