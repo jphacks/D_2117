@@ -43,6 +43,11 @@
     - Windowsサーバー(オンプレミス)
 - APIサーバー
     - Windowsサーバー(オンプレミス)
+- Webアプリ表示クライアント(確認済み)
+    - Windows (Chrome)
+    - Mac (Chrome, Safari)
+    - Android (Chrome)
+    - iOS, iPadOS (Chrome, Safari)
 
 ### 独自技術
 #### 犬画像を「画像分析AI(人工知能)」が分析し、犬同士の類似度を計算する技術
