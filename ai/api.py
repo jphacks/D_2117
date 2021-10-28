@@ -30,14 +30,15 @@ device = 'cpu'
 print(f"Done!!")
 
 
-def to_RGB(image:Image, file_name='./tmp/tmp.jpg'):
+def to_RGB(image: Image, file_name='./tmp/tmp.jpg'):
 
     os.makedirs('./tmp/', exist_ok=True)
-    
-    if image.mode == 'RGB': return image
-    image.load() # required for png.split()
+
+    if image.mode == 'RGB':
+        return image
+    image.load()  # required for png.split()
     background = Image.new("RGB", image.size, (255, 255, 255))
-    background.paste(image, mask=image.split()[3]) # 3 is the alpha channel
+    background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
 
     background.save(file_name, 'JPEG', quality=80)
     return Image.open(file_name)

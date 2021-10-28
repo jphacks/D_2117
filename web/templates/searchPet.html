@@ -26,11 +26,10 @@
       </div>
 
       {% if current_user.is_authenticated == False %}
-      <div class="row mb-3">
-        <div class="col-md-12">
-            <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
-            <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email"　required>
-        </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
+        <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email" required>
+        <div id="emailHelp" class="form-text">AIを通じて予測された飼い主にメールアドレスが公開されます。迷子を探している飼い主より、より詳細な情報の提供を求められる場合がございます。</div>
       </div>
       {% endif %}
 

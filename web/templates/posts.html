@@ -25,14 +25,61 @@
                   </div>
                 {% endif %}
                 <div class="pb-4">
-                <div style="white-space:pre-wrap;">
-                {% if thread.found_flag == True%}
-                    {{ thread.message.split("<thread_id>") }}
-                {% else %}       
-                    {{thread.message}} 
-                {% endif %}
-              </div><br>
+                  {% if thread.found_flag %}
+                  <!--迷子発見速報-->
+                    <!--発見場所-->
+                    <div><b>●発見場所</b><br>
+                      {{ thread.message.split("!@#)&!^#$%^&*()")[0] }} {{ thread.message.split("!@#)&!^#$%^&*()")[1] }}<br><br>
+                    </div>
+                    <!--特徴-->
+                    <div><b>●特徴</b>
+                      <div style="white-space:pre-wrap;">{{ thread.message.split("!@#)&!^#$%^&*()")[2] }}</div><br>
+                    </div>
+                    
+                    <div>
+                      <b>●AI分析結果</b>
+                    </div>
+                    
+                    <!-- AI分析結果-->
+                    {% for petid_sim_thread in range(0, thread.message.split("!@#)&!^#$%^&*()")[3:] | length, 3) %}  
+                      <div class="">
+                        もしかして<b>{{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}</b>さん？
+                        （類似度 : {{thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 4]}} %）
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-grid">
+                          <a class="btn btn-outline-success" href="/thread/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 5]}}" role="button">
+                            {{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}さんの迷子速報を見る
+                          </a>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  
+                  {% elif thread.lost_flag %}
+                  <!--迷子速報-->
+                    <!--特徴-->
+                    <div><b>●特徴</b>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div><br>
+                    </div>       
+                  {% else %}
+                  <!--通常投稿-->
+                    <div><b>●つぶやき</b><br>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div>
+                    </div>
+                  {% endif %}
+                </div>
+                
               </div>
+              <!--更新日時-->
+              <div class="align-bottom ms-3 mb-2">
+                
+                  {% if thread.lost_flag %}
+                    <p class="card-text"><small class="text-muted">迷子登録日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% elif thread.found_flag %}
+                    <p class="card-text"><small class="text-muted">迷子発見日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% else %}
+                    <p class="card-text"><small class="text-muted">投稿日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% endif %}
               </div>
 
               <!-- MyPageの場合は投稿削除フラグを表示-->

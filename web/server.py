@@ -89,9 +89,7 @@ def myPage():
         update_pet.lost()  # 迷子申請があったら迷子登録
 
         # 迷子捜索用のスレッド
-        message = "【特徴】\n"+update_pet.features_description + \
-            "\n\n【迷子登録された時刻】\n" + \
-            update_pet.lost_time.strftime("%y/%m/%d %H:%M")
+        message = update_pet.features_description
         last_thread = Thread.query.filter_by(
             pet_id=form.pet_id.data).order_by(Thread.thread_id.desc()).first()
         if last_thread is not None:
@@ -323,43 +321,43 @@ def thread(reply_id="0"):
             # ペットの名前をセレクトできるように
             form.pet_id.choices = [(pet.pet_id, pet.pet_name)
                                    for pet in pet_list]
+
         if form.is_submitted():
-            if form.pet_id.data == "":
-                return redirect("/redirect?status=threade1")
-            # 画像を加工・保存
-            if 'img' in request.files:
-                img = request.files['img']
-                filename = secure_filename(img.filename)
-
-                if filename == '' and reply_id == 0:
-                    return redirect("/redirect?status=threade2")
-
-                if reply_id == 0:  # トップページのスレッドは必ず写真あり
+            if reply_id == 0:
+                if form.pet_id.data == "" or form.pet_id.data is None:
+                    return redirect("/redirect?status=threade1")
+                pet_id = form.pet_id.data
+                if 'img' in request.files:
+                    img = request.files['img']
+                    filename = secure_filename(img.filename)
+                    if filename == '' or filename == None:
+                        return redirect("/redirect?status=threade2")
                     filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
-                    img_url = os.path.join(form.pet_id.data, filename)
+                    img_url = os.path.join(pet_id, filename)
                     os.makedirs(os.path.join(
-                        app.config['UPLOAD_FOLDER'], form.pet_id.data), exist_ok=True)
+                        app.config['UPLOAD_FOLDER'], pet_id), exist_ok=True)
                     img.save(os.path.join(
                         app.config['UPLOAD_FOLDER'], img_url+".jpg"))
-
+                    del img  # メモリ対策
                     try:
                         # AI関連の記述する部分
                         vector = np.array(ai_api(img_url+".jpg"))
                         vector_url = os.path.join(
                             './web/static/vector/', img_url)
                         os.makedirs(os.path.join("./web/static/vector/",
-                                    form.pet_id.data), exist_ok=True)
+                                    pet_id), exist_ok=True)
                         np.save(vector_url, vector)
                     except:
                         pass
 
-                    del img  # メモリ対策
+                else:
+                    return redirect("/redirect?status=threade2")
             else:
                 img_url = None
-
+                pet_id = None
             # DBへ保存
             new_thread = Thread(flask_login.current_user.id,
-                                form.pet_id.data, reply_id, img_url, form.message.data)
+                                pet_id, reply_id, img_url, form.message.data)
             try:
                 db.session.add(new_thread)
                 db.session.commit()
@@ -404,15 +402,15 @@ def searchPet():
         lostpetlist = [pet.pet_id for pet in Pet.query.filter_by(
             lost_flag=True).all()]
 
-        found_message = f"迷子が {form.prefecture.data} {form.city.data} で発見されました。\n\n【発見者のコメント】\n{form.features_description.data}\n\n【AIの予測結果】\n"
-
+        sep_found_message = "!@#)&!^#$%^&*()"
+        found_message = f"{form.prefecture.data}{sep_found_message}{form.city.data}{sep_found_message}{form.features_description.data}"
         for pet_id, sim in predict_pet(vector, lostpetlist):
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, lost_flag=True).first()
             if lost_thread is None:
                 return redirect("/redirect?status=searchpete3")
             message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見しました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
-            found_message += f"類似度：{sim*100:.2f}% <thread_id>{lost_thread.thread_id}<thread_id> \n"
+            found_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
             new_thread = Thread(1, None, lost_thread.thread_id,
                                 img_url, message)
             try:

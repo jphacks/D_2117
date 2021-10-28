@@ -26,28 +26,39 @@
       <!--電話番号・メールアドレス・パスワード-->
       <div class="row">
         <div class="col-md-4">
-          <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
-          <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email" required>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">メールアドレス</label>
+            <input type="email" class="form-control" placeholder="ilove@pet.com" maxlength="50" name="email" required>
+            <div id="emailHelp" class="form-text">AIを通じて予測された飼い主にメールアドレスが公開されます。迷子を探している飼い主より、より詳細な情報の提供を求められる場合がございます。</div>
+          </div>
         </div>
         <div class="col-md-4">
-          <label for="exampleInputEmail1" class="form-label">電話番号</label>
-          <input type="tel" class="form-control" placeholder="08011112222" id="exampleInputEmail1" maxlength="11" name="tell" required>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">電話番号</label>
+            <input type="tel" class="form-control" placeholder="08011112222" id="exampleInputEmail1" maxlength="11" name="tell" required>
+          </div>
         </div>
         <div class="col-md-4">
-          <label for="exampleInputPassword1" class="form-label">パスワード</label>
-          <input type="password" class="form-control" placeholder="s3lzjadfhzcave" maxlength="50" id="exampleInputPassword1" name="password" required>
+          <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">パスワード</label>
+            <input type="password" class="form-control" placeholder="s3lzjadfhzcave" maxlength="50" id="exampleInputPassword1" name="password" required>
+          </div>
         </div>
       </div>
 
       <!--都道府県・市町村-->
       <div class="row mb-4">
         <div class="col-md-6">
+          <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">都道府県</label>
             <input class="form-control" type="text" maxlength="10" name="prefecture" placeholder="都道府県" required>
+          </div>
         </div>
         <div class="col-md-6">
+          <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">市町村</label>
             <input class="form-control" type="text" maxlength="20" name="city" placeholder="市町村" required>
+          </div>
         </div>
       </div>
       

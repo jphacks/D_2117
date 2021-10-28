@@ -23,7 +23,7 @@ class User(flask_login.UserMixin, db.Model):
     user_fname = db.Column(db.String(10), nullable=False)  # 名前
     user_lname = db.Column(db.String(10), nullable=False)  # 苗字
     email = db.Column(db.String(50), unique=True, nullable=False)  # メール
-    tell = db.Column(db.String(12),  unique=True, nullable=False)  # 電話
+    tell = db.Column(db.String(12),  nullable=False)  # 電話
     prefecture = db.Column(db.String(10), nullable=False)  # 県
     city = db.Column(db.String(20), nullable=False)  # 市
     point = db.Column(db.Integer, default=1000)  # アプリ内通貨
@@ -118,8 +118,11 @@ class Thread(db.Model):
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
     total_point = db.Column(db.Integer, default=0)  # スレッド内の総移動数
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
+    tag1 = db.Column(db.String(50))
+    tag2 = db.Column(db.String(50))
+    tag3 = db.Column(db.String(50))
 
-    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False, found_flag=False):
+    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False, found_flag=False, tag1=None, tag2=None, tag3=None):
         self.user_id = user_id
         self.pet_id = pet_id
         self.reply_id = reply_id
@@ -127,11 +130,14 @@ class Thread(db.Model):
         self.message = message
         self.lost_flag = lost_flag
         self.found_flag = found_flag
+        self.tag1 = tag1
+        self.tag2 = tag2
+        self.tag3 = tag3
 
 
 db.create_all()
 if User.query.first() is None:
-    new_user = User("管理者", "01", "管理者",
+    new_user = User("AI", "AI", "管理者",
                     secret['db']['user'], "00000000000", "長野県", "茅野市")
     new_user_pass = UserLogin(secret['db']['user'], secret['db']['pass'], None)
     try:
