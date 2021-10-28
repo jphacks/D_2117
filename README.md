@@ -1,9 +1,14 @@
-# サンプル（プロダクト名）
-
+# FindPet.Me<small>〜日々の投稿が大切な家族を救う〜</small>
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
+日本における犬猫の飼育数は約2000万匹とされており、人々は動物と共存しています。<br>
+そんな中、毎年多くのペットが路上を徘徊していたり、逃い込んできたりして保護されています。<br>
+現在では迷子になった際の対処法として、マイクロチップの埋め込みや迷子礼などの方法があります。<br>
+しながらこれらの方法はまだ普及しておらず、対策としては不十分です。<br>
+私達は迷子のペットを探すプラットフォームとして、<br>
+「周囲の人々による<span style="background: linear-gradient(transparent 80%, yellow 0%);">SNS</span>×<span style="background: linear-gradient(transparent 80%, yellow 0%);">AI</span>マッチング」による<span style="background: linear-gradient(transparent 80%, yellow 0%);">【迷子のペットを探し出すアプリ】</span>を開発しようと考えました。
 ### 製品説明（具体的な製品の説明）
 ### 特長
 ####1. 特長1
