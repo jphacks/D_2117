@@ -51,8 +51,15 @@
     - Commit ID 01 [ac59e9744c529adc6aa759fc5df660fe653037a3](https://github.com/jphacks/D_2117/commit/ac59e9744c529adc6aa759fc5df660fe653037a3#diff-64f017e26787ef375a8d3506b2e62df90ab41ff128357162560b6e6e19fe4faa)<br>
     - Commit ID 02 [f39220917cfdba25fa897c7b198b7d16de0fa1a8](https://github.com/jphacks/D_2117/commit/f39220917cfdba25fa897c7b198b7d16de0fa1a8#diff-64f017e26787ef375a8d3506b2e62df90ab41ff128357162560b6e6e19fe4faa)
 
+- 犬画像のセグメンテーション & 切り抜き
+![dog_segmentation](https://user-images.githubusercontent.com/64422386/139197817-4e676b55-c878-4258-9176-be7f7d926c2a.png)<br>
+- 犬画像をコサイン類似度順に並べ替え
+![dog_cos_sim](https://user-images.githubusercontent.com/64422386/139198020-b713bbcb-37c8-4993-b8b3-a0cc54ca4844.jpg)
+
 
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
-* 
-* 
+- Jonathan Long, Evan Shelhamer, Trevor Darrell,「[Fully Convolutional Networks for Semantic Segmentation
+](http://arxiv.org/abs/1411.4038)」, arXiv:1411.4038 [cs]
+- Karen Simonyan, Andrew Zisserman, 「(Very Deep Convolutional Networks for Large-Scale Image Recognition
+)[https://arxiv.org/abs/1409.1556]」, arXiv:1409.1556 [cs.CV]
