@@ -1,6 +1,11 @@
 <div class="pt-2">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for thread in threadlist %}
+
+
+
+
+
       <div class="col">
         <!--迷子-->
           {% if thread.lost_flag %}
@@ -16,7 +21,9 @@
           {% else %}
           <div class="card h-100 p-3">
           {% endif %}
-              <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+              {% if thread.img_source != None %}
+                <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+              {% endif %}
               <div class="card-body">
                 {% if thread.found_flag == False%}
                   <div class="text-muted pb-2">
@@ -86,16 +93,22 @@
               {%- if request.path == "/myPage" %}
               <div class="card-footer bg-transparent">
                   <!--返信ボタン-->
-                  <div class="d-grid pb-3">
-                    {% if thread.lost_flag %}
-                      <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                    {% elif thread.found_flag %}
-                      <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                    {% else %}
-                      <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
-                    {% endif %}
-                  </div>
+                  {% if thread.img_source != None %}
+                    <div class="d-grid pb-3">
+                      {% if thread.lost_flag %}
+                        <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% elif thread.found_flag %}
+                        <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% else %}
+                        <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                      {% endif %}
+                    </div>
+                  {% endif %}
                   <!--削除ボタン-->
+                  {% if thread.del_flag %}
+                  削除済みです。
+                  {% else %}
+                  
                   <form id="mypagedelform" method="post">
                       {{ delform.csrf_token }}
                       <div class="d-grid">
@@ -105,23 +118,31 @@
                           </button>
                       </div>
                   </form>
+                  {% endif %}
               </div>
               {% else %}
               <div class="card-footer bg-transparent">
-                  <div class="d-grid">
-                    {% if thread.lost_flag %}
-                    <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                    {% elif thread.found_flag %}
-                      <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                    {% else %}
-                      <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
-                    {% endif %}
+                {% if thread.img_source != None %}
+                  <div class="d-grid">             
+                      {% if thread.lost_flag %}
+                      <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% elif thread.found_flag %}
+                        <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% else %}
+                        <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                      {% endif %}              
                   </div>
+                {% endif %}
               </div>
               {% endif %}
           </div>
       
-        
+
+
+
+
+
+              
       </div>
     {% endfor %}
   </div>

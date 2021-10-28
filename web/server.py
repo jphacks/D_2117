@@ -109,7 +109,7 @@ def myPage():
     elif delform.validate_on_submit() and delform.thread_id.data:  # スレッドの削除
         del_thread = Thread.query.filter_by(
             thread_id=delform.thread_id.data).first()
-        del_thread.del_flag = True
+        del_thread.del_flag = True  # lost_flag=True+del_flag=True→迷子発見
         try:
             db.session.add(del_thread)
             db.session.commit()
@@ -120,7 +120,7 @@ def myPage():
     pet_list = Pet.query.filter_by(  # 自身の飼っているペットの取得
         user_id=flask_login.current_user.id).all()
     threadlist = Thread.query.filter_by(
-        user_id=flask_login.current_user.id, del_flag=False).order_by(Thread.thread_id.desc()).all()
+        user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
     lostthread = Thread.query.filter_by(lost_flag=True, del_flag=False)
     petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name).filter_by(
         user_id=flask_login.current_user.id)
@@ -298,8 +298,8 @@ def thread(reply_id="0"):
     reply_id = int(reply_id)
 
     threadtop = Thread.query.filter_by(
-        thread_id=reply_id, del_flag=False).first()
-    threadlist = Thread.query.filter_by(reply_id=reply_id, del_flag=False)
+        thread_id=reply_id).first()
+    threadlist = Thread.query.filter_by(reply_id=reply_id)
     nicknamelist = User.query.with_entities(User.id, User.user_nickname)
     petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name)
 
