@@ -1,5 +1,6 @@
 from email import message
 from flask import render_template, request, redirect, flash, send_from_directory
+from sqlalchemy.orm import query
 import flask_login
 from waitress import serve
 from web.form import *
@@ -91,7 +92,7 @@ def myPage():
         # 迷子捜索用のスレッド
         message = update_pet.features_description
         last_thread = Thread.query.filter_by(
-            pet_id=form.pet_id.data).order_by(Thread.thread_id.desc()).first()
+            pet_id=form.pet_id.data, lost_flag=False, del_flag=False).order_by(Thread.thread_id.desc()).first()
         if last_thread is not None:
             last_thread = last_thread.img_source
         else:
@@ -119,8 +120,8 @@ def myPage():
 
     pet_list = Pet.query.filter_by(  # 自身の飼っているペットの取得
         user_id=flask_login.current_user.id).all()
-    threadlist = Thread.query.filter_by(
-        user_id=flask_login.current_user.id).order_by(Thread.thread_id.desc()).all()
+    threadlist = Thread.query.filter_by(user_id=flask_login.current_user.id).filter(db.or_(
+        Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).order_by(Thread.thread_id.desc()).all()
     lostthread = Thread.query.filter_by(lost_flag=True, del_flag=False)
     petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name).filter_by(
         user_id=flask_login.current_user.id)
@@ -297,9 +298,10 @@ def thread(reply_id="0"):
         reply_id = 0
     reply_id = int(reply_id)
 
-    threadtop = Thread.query.filter_by(
-        thread_id=reply_id).first()
-    threadlist = Thread.query.filter_by(reply_id=reply_id)
+    threadtop = Thread.query.filter_by(thread_id=reply_id, del_flag=False).filter(
+        db.or_(Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).first()
+    threadlist = Thread.query.filter_by(reply_id=reply_id, del_flag=False).filter(
+        db.or_(Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag)))
     nicknamelist = User.query.with_entities(User.id, User.user_nickname)
     petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name)
 
@@ -375,7 +377,8 @@ def pet(pet_id):
         return redirect("/")
     pet_id = int(pet_id)
 
-    pet_thread = Thread.query.filter_by(pet_id=pet_id).all()
+    pet_thread = Thread.query.filter_by(pet_id=pet_id).filter(db.or_(
+        Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).all()
     petnamelist = Pet.query.with_entities(
         Pet.pet_id, Pet.pet_name).filter_by(pet_id=pet_id)
 
@@ -407,23 +410,26 @@ def searchPet():
         sep_found_message = "!@#)&!^#$%^&*()"
         found_message = f"{form.prefecture.data}{sep_found_message}{form.city.data}{sep_found_message}{form.features_description.data}"
         for pet_id, sim in predict_pet(vector, lostpetlist):
+            # 返信欄用のメッセージ
+            found_reply_message = f"{form.prefecture.data}{sep_found_message}{form.city.data}{sep_found_message}{form.features_description.data}"
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
-                pet_id=pet_id, lost_flag=True).first()
+                pet_id=pet_id, lost_flag=True, del_flag=False).first()
             if lost_thread is None:
                 return redirect("/redirect?status=searchpete3")
-            message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見しました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
+            message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見されました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
             found_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
-            new_thread = Thread(1, None, lost_thread.thread_id,
-                                img_url, message)
+            found_reply_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
+            new_thread = Thread(
+                1, None, lost_thread.thread_id, found_reply_message)
             try:
                 db.session.add(new_thread)
                 db.session.commit()
             except:
                 return redirect("/redirect?status=searchpete2")
-            mail = User.query.filter_by(id=lost_thread.user_id).first().email
-            message += "\n\n詳細\nhttp://date.ddns.net:7777/thread/" + \
-                str(lost_thread.thread_id)
-            send_mail(mail, message)
+        mail = User.hqeuery.filter_by(id=lost_thread.user_id).first().email
+        message += "\n\n詳細\nhttp://date.ddns.net:7777/thread/" + \
+            str(lost_thread.thread_id)
+        send_mail(mail, message)
 
         found_thread = Thread(1, None, 0, img_url,
                               found_message, found_flag=True)
@@ -431,7 +437,7 @@ def searchPet():
         if flask_login.current_user.is_authenticated:
             email = flask_login.current_user.email
         else:
-            email = form.email.data
+            email = form.meimail.data
 
         new_searchpet = SearchPet(
             form.prefecture.data, form.city.data, form.features_description.data, img_url, email)

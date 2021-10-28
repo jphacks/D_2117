@@ -28,7 +28,7 @@
                                 <td nowrap>{{pet.pet_name}}</td>
                                 <td style="white-space:pre-wrap;">{{pet.features_description}}</td>
                                 <td nowrap>
-                                    {% if pet.lost_flag %}
+                                    {% if pet.lost_flag and lostthread.filter_by(pet_id=pet.pet_id).first().del_flag == False %}
                                         <a href="/thread/{{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}">捜索中</a>
                                         <form id="mypagedelform" method="post">
                                             {{ delform.csrf_token }}
