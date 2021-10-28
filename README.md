@@ -1,4 +1,4 @@
-# FindPet.Me<small>〜日々の投稿が大切な家族を救う〜</small>
+# FindPet.Me〜日々の投稿が大切な家族を救う〜
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 
 ## 製品概要
@@ -8,7 +8,7 @@
 現在では迷子になった際の対処法として、マイクロチップの埋め込みや迷子礼などの方法があります。<br>
 しながらこれらの方法はまだ普及しておらず、対策としては不十分です。<br>
 私達は迷子のペットを探すプラットフォームとして、<br>
-「周囲の人々による<font color="red">SNS</font>×<font color="red">AI</font>マッチング」による<font color="red">【迷子のペットを探し出すアプリ】</font>を開発しようと考えました。
+「周囲の人々によるSNS×AIマッチング」による【迷子のペットを探し出すアプリ】を開発しようと考えました。
 ### 製品説明（具体的な製品の説明）
 ### 特長
 ####1. 特長1
