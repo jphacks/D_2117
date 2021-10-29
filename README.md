@@ -77,7 +77,7 @@
 - APIサーバー
     - Windowsサーバー(オンプレミス)
 - Webアプリ表示クライアント(確認済み)
-    - Windows (Chrome, )
+    - Windows (Chrome, Edge)
     - Mac (Chrome, Safari)
     - Android (Chrome)
     - iOS, iPadOS (Chrome, Safari)
