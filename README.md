@@ -61,7 +61,7 @@
 #### フレームワーク・ライブラリ・モジュール
 - Backend
     - App : Flask
-    - Web server : Nginx
+    - Web server : Nginx, waitress
     - AI API : PyTorch, Flask
 - Frontend
     - Web design : HTML, Bootstrap
