@@ -69,7 +69,7 @@
     - Web server : Nginx, waitress
     - AI API : PyTorch, Flask
 - Frontend
-    - Web design : HTML, Bootstrap
+    - Web design : Bootstrap
 
 #### デバイス
 - Webサーバー
