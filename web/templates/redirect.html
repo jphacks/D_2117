@@ -102,7 +102,3 @@
         location.href="/"
     {% endif %}
 {% endblock %}
-
-return redirect("/redirect?status=threadsuccess&next="+str(reply_id))
-alert("ログアウトしました。\n3秒後にページを移動します。");
-setTimeout("location.href='/'",1000*3);
