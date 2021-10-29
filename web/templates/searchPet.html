@@ -3,6 +3,11 @@
 {% block header %}迷子発見フォーム{% endblock %}
 {% block main %}
   <!--迷子発見フォーム-->
+  <div class="mb-3 text-muted">
+    迷子のペット達を発見したら、こちらの「迷子発見フォーム」に入力をお願いします。
+    皆さんで協力して迷子のペット達を探し出しましょう！ ご協力お願いいたします。<br>
+    こちらの「迷子発見フォーム」からペットの情報を送信すると、「ペット分析AI」が自動的に飼い主へ通知します。
+  </div>
   <form id="searchpetform" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
     <div class="row">

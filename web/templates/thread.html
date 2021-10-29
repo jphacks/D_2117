@@ -9,7 +9,7 @@
   {% include "reply.html"%}
 {% endif %}
 
-
+  <!-- ログイン中 -->
   {% if current_user.is_authenticated %}
     
     {% if reply_id == 0 %}
@@ -22,10 +22,14 @@
       <form name="threadsubmissionform" method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
         {% if reply_id == 0 %}
-
+          
+          <div class="mb-2 text-muted">
+            あなたの<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>を迷子申請する方は<a href="/myPage">マイページ</a>へ。&nbsp;
+            迷子のペットを発見した方は<a href="/searchPet">迷子発見フォーム</a>へ。
+          </div>
 
           <div class="mb-2">
-            <label for="exampleFormControlTextarea1" class="form-label">メッセージ</label>
+            <label for="exampleFormControlTextarea1" class="form-label">つぶやき</label>
             <textarea class="form-control" name="message" rows="3" minlength="5" maxlength="400" placeholder="ペット(かぞく)との思い出をつぶやいてね！ （5文字以上）" required></textarea>
           </div>
           <div class='row'>
@@ -53,13 +57,65 @@
                 <button type="submit" name="sub" class="btn btn-outline-primary">送信</button>
               </div>
           </div>
+        {% endif %}
+      </form>
+    </div>
 
+  <!--ログイアウト中-->
+  {% else %}
+    {% if reply_id == 0 %}
+      <div class='row'>
+        <h3 class="pb-1 font-italic border-bottom">新規投稿</h3>
+      </div>
+    {% endif %}
+    
+    <div class="row pb-4">
+      <form name="threadsubmissionform" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {% if reply_id == 0 %}
           
+          <div class="mb-2 text-muted">
+            あなたの<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>を迷子申請する方は<a href="/myPage">マイページ</a>へ。&nbsp;
+            迷子のペットを発見した方は<a href="/searchPet">迷子発見フォーム</a>へ。
+          </div>
 
+          <div class="mb-2">
+            <label for="exampleFormControlTextarea1" class="form-label">つぶやき&nbsp;（投稿するには<a href="/login">ログイン</a>が必要です。）</label>
+            <textarea class="form-control" name="message" rows="3" minlength="5" maxlength="400" placeholder="ペット(かぞく)との思い出をつぶやいてね！ （5文字以上）" disabled></textarea>
+          </div>
+          <div class='row'>
+            <div class='col-md-6'>
+              <div class="mt-1">
+                <label for="formFile" class="form-label">ペットの画像</label>
+                <input class="form-control" type="file" name="img" accept="image/*" disabled>
+              </div>
+            </div>
+            <div class='col-md-6'>
+              <div class="mt-1">
+                <label for="exampleFormControlTextarea1" class="form-label">ペットの名前 (※先に<a href="/petInfo">ペットを登録</a>してください)</label>
+                <select class="form-select" aria-label="Default select example" name="pet_id" disabled>
+                  <option selected value="" disabled>ペットの名前を選択</option>
+                  {% for p_id in form.pet_id %}
+                    {{p_id}}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class='row'>
+              <div class="d-grid">
+                <label for="exampleFormControlTextarea1" class="form-label">&nbsp;</label>
+                <button type="submit" name="sub" class="btn btn-outline-secondary" disabled>送信</button>
+              </div>
+          </div>
         {% endif %}
       </form>
     </div>
   {% endif %}
+
+
+
+
 
   {% if reply_id == 0 %}
     <div class='row'>

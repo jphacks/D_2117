@@ -94,6 +94,10 @@
         alert("登録しました。");
         location.href="/searchPet"
 
+    {% elif status == "e404" %}
+        alert("ページが存在しません");
+        location.href="/"
+
     {% else %}
         location.href="/"
     {% endif %}

@@ -3,6 +3,9 @@
 {% block header %}ペット登録フォーム{% endblock %}
 {% block main %}
 
+  <div class="mb-3 text-muted">
+    あなたが一緒に暮らしている<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>を登録してください。FindPet.Meとともに思い出を記録しましょう！
+  </div>
   <form id="searchpetform" method="post" enctype="multipart/form-data">
     {{ form.csrf_token }}
       <div class="row">
