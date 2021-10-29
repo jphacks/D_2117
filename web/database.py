@@ -134,6 +134,9 @@ class Thread(db.Model):
         self.tag2 = tag2
         self.tag3 = tag3
 
+    def updatetime(self):
+        self.update = datetime.datetime.now()
+
 
 db.create_all()
 if User.query.first() is None:

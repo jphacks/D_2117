@@ -1,34 +1,31 @@
+<!--返信欄のみんなの反応-->
+
 <div class="pt-2">
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-      {% for thread in threadlist %}
-        <div class="col">
-          <!--迷子-->
-            {% if thread.lost_flag %}
-            <div class="card h-100 p-3 border-warning">
-                <div class="mb-2 badge bg-warning text-wrap fs-3">
-                    迷子速報！
-                </div>
-            {% elif thread.found_flag %}
-            <div class="card h-100 p-3 border-success">
-                <div class="mb-2 badge bg-success text-wrap fs-3">
-                    迷子発見速報！
-                </div>
+    <div class="row">
+      <div class="col">
+        {% for thread in threadlist %}
+          <div class="my-3">
+            {% if thread.found_flag %}
+            <div class="card p-3 mb-3　border-success">
+              <div class="mb-2 badge bg-success text-wrap fs-3">迷子発見速報！</div>
             {% else %}
-            <div class="card h-100 p-3">
+            <div class="card p-3　mb-3">
             {% endif %}
+              <div class="row no-gutters">
                 {% if thread.img_source != None %}
-                  <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+                  <div class="col-md-4">
+                    <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+                  </div>
                 {% endif %}
-                <div class="card-body">
-                  {% if thread.found_flag == False%}
-                    <div class="text-muted pb-2">
-                      <ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>のお名前 
-                      <a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
-                    </div>
-                  {% endif %}
-                  <div class="pb-4">
-                    {% if thread.found_flag %}
-                    <!--迷子発見速報-->
+
+
+                <!--メッセージ-->
+                <div class="col-md-8">
+                  <div class="card-body">
+                    {% if thread.found_flag == False %}
+                      <h5 class="card-title">{{ nicknamelist.filter_by(id=thread.user_id).first().user_nickname }}さんのコメント</h5>
+                    {% endif %}
+                    {% if thread.found_flag %} <!-- 迷子速報 -->
                       <!--発見場所-->
                       <div><b>●発見場所</b><br>
                         {{ thread.message.split("!@#)&!^#$%^&*()")[0] }} {{ thread.message.split("!@#)&!^#$%^&*()")[1] }}<br><br>
@@ -41,97 +38,38 @@
                       <div>
                         <b>●AI分析結果</b>
                       </div>
-                      
                       <!-- AI分析結果-->
                       {% for petid_sim_thread in range(0, thread.message.split("!@#)&!^#$%^&*()")[3:] | length, 3) %}  
                         <div class="">
-                          もしかして<b>{{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}</b>さん？
-                          （類似度 : {{thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 4]}} %）
-                        </div>
-                        <div class="mb-2">
-                          <div class="d-grid">
-                            <a class="btn btn-outline-success" href="/thread/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 5]}}" role="button">
-                              {{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}さんの迷子速報を見る
-                            </a>
-                          </div>
+                          <a href="/pet/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 3]}}" class="text-reset">
+                            {{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}
+                          </a>さんとの類似度　{{thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 4]}} %
                         </div>
                       {% endfor %}
-                    
-                    {% elif thread.lost_flag %}
-                    <!--迷子速報-->
-                      <!--特徴-->
-                      <div><b>●特徴</b>
-                        <div style="white-space:pre-wrap;">{{ thread.message }}</div><br>
-                      </div>       
-                    {% else %}
-                    <!--通常投稿-->
-                      <div><b>●つぶやき</b><br>
-                        <div style="white-space:pre-wrap;">{{ thread.message }}</div>
-                      </div>
+
+                    {% else %} <!--返信による投稿-->
+                      <div style="white-space:pre-wrap;">{{thread.message}}</div>
                     {% endif %}
                   </div>
-                  
-                </div>
-                <!--更新日時-->
-                <div class="align-bottom ms-3 mb-2">
-                  
-                    {% if thread.lost_flag %}
-                      <p class="card-text"><small class="text-muted">迷子登録日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
-                    {% elif thread.found_flag %}
+
+                  <!--更新日時-->
+                  <div class="align-bottom ms-3 mb-2">
+                    {% if thread.found_flag %}
                       <p class="card-text"><small class="text-muted">迷子発見日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
                     {% else %}
                       <p class="card-text"><small class="text-muted">投稿日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
                     {% endif %}
+                  </div>
+
                 </div>
-  
-                <!-- MyPageの場合は投稿削除フラグを表示-->
-                {%- if request.path == "/myPage" %}
-                <div class="card-footer bg-transparent">
-                    <!--返信ボタン-->
-                    {% if thread.img_source != None %}
-                      <div class="d-grid pb-3">
-                        {% if thread.lost_flag %}
-                          <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                        {% elif thread.found_flag %}
-                          <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                        {% else %}
-                          <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
-                        {% endif %}
-                      </div>
-                    {% endif %}
-  
-                    <!--削除ボタン-->
-                    <form id="mypagedelform" method="post">
-                        {{ delform.csrf_token }}
-                        <div class="d-grid">
-                            <input type="hidden" name="thread_id" value={{thread.thread_id}}>
-                            <button class="btn btn-outline-dark btn-sm" id='delete' name='delete' type=submit value='削除'>
-                                投稿を削除する
-                            </button>
-                        </div>
-                    </form>
-                    
-                </div>
-                {% else %}
-                <div class="card-footer bg-transparent">
-                  {% if thread.img_source != None %}
-                    <div class="d-grid">             
-                        {% if thread.lost_flag %}
-                        <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                        {% elif thread.found_flag %}
-                          <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
-                        {% else %}
-                          <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
-                        {% endif %}              
-                    </div>
-                  {% endif %}
-                </div>
-                {% endif %}
+
+
+
+              </div>
             </div>
-        
-          
-        </div>
-      {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
   

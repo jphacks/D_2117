@@ -29,10 +29,10 @@
         location.href="/myPage"
 
     {% elif status == "mypageff" %}
-        alert("登録に失敗しました。");
+        alert("エラーが発生しました。");
         location.href="/myPage"
     {% elif status == "mypagefs" %}
-        alert("登録しました。");
+        alert("迷子速報を取り消しました。");
         location.href="/myPage"
 
     {% elif status == "petinfof" %}
@@ -68,6 +68,9 @@
         location.href="/"
     {% elif status == "threade2" %}
         alert("画像を登録してください。");
+        location.href="/"
+    {% elif status == "threade3" %}
+        alert("ページが見つかりません。投稿が削除された可能性があります。");
         location.href="/"
 
     {% elif status == "threadf" %}

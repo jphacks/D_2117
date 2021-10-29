@@ -4,7 +4,12 @@
     <div class='col-md-4 pb-4'>
         <h3 class="pb-1 font-italic border-bottom">{{ nicknamelist.filter_by(id=threadtop.user_id).first().user_nickname }}さんの投稿</h3>
         <div class='mx-0'>
-            {% if threadtop.lost_flag %}
+            {% if threadtop.lost_flag and threadtop.del_flag %}
+            <div class="card h-100 p-3 border-info">
+                <div class="mb-2 badge bg-info text-wrap fs-3">
+                    迷子と再会！
+                </div>
+            {% elif threadtop.lost_flag %}
             <div class="card h-100 p-3 border-warning">
                 <div class="mb-2 badge bg-warning text-wrap fs-3">
                     迷子速報！
@@ -27,8 +32,17 @@
                             <a href="/pet/{{threadtop.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = threadtop.pet_id).first().pet_name}}</a>
                         </div>
                     {% endif %}
-
-                    {% if threadtop.found_flag %}
+                    {% if threadtop.lost_flag and threadtop.del_flag %}
+                    <!--迷子再会-->
+                      <!--特徴-->
+                      <div class="mb-3">
+                        皆様のおかげで<a href="/pet/{{threadtop.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = threadtop.pet_id).first().pet_name}}</a>
+                        さんと家族の皆さんは無事再会することができました。<br>ご協力頂いた皆様。誠にありがとうございました。
+                      </div> 
+                      <div><b>●特徴</b>
+                        <div style="white-space:pre-wrap;">{{ threadtop.message }}</div><br>
+                      </div> 
+                    {% elif threadtop.found_flag %}
                         <!--迷子発見速報-->
                         <!--発見場所-->
                         <div><b>●発見場所</b><br>
@@ -74,6 +88,18 @@
             </div>
             <!--更新日時-->
             <div class="align-bottom ms-3 mb-2">
+
+                {% if threadtop.tag1 != None %}
+                  <div class="text-muted mb-2">
+                    <div><b>●自動生成タグ</b><br>
+                      {% if threadtop.tag1 != None %}<a href="/tag/{{ threadtop.tag1 }}" class="text-reset">#{{ threadtop.tag1 }}</a>{% endif %}
+                      {% if threadtop.tag2 != None %}<a href="/tag/{{ threadtop.tag2 }}" class="text-reset">#{{ threadtop.tag2 }}</a>{% endif %}
+                      {% if threadtop.tag3 != None %}<a href="/tag/{{ threadtop.tag3 }}" class="text-reset">#{{ threadtop.tag3 }}</a>{% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+
+
                 {% if threadtop.lost_flag %}
                 <p class="card-text"><small class="text-muted">迷子登録日時 {{ threadtop.update.strftime("%y/%m/%d %H:%M") }}</small></p>
                 {% elif threadtop.found_flag %}
@@ -129,18 +155,6 @@
 
         <!--返信一覧-->
         <h3 class="pt-4 pb-1 font-italic border-bottom">みんなの反応</h3>
-        {% for thread in threadlist %}
-            {% if thread.img_source != None %}
-                <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
-            {% endif %}
-            {{ nicknamelist.filter_by(id=thread.user_id).first().user_nickname }} さん
-            <div class="card-body">
-            <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
-            {% if thread.img_source != None %}
-                <a href="/thread/{{thread.thread_id}}">返信する</a>
-            {% endif %}
-            </div>
-        {% endfor %}
 
         {% include "reply_posts.html"%}
         

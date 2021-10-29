@@ -14,6 +14,7 @@ import smtplib
 from email.mime.text import MIMEText
 import secrets
 import string
+import random
 
 """共有部分"""
 
@@ -98,7 +99,7 @@ def myPage():
         else:
             last_thread = "common/C1"
         lost_thread = Thread(flask_login.current_user.id,
-                             form.pet_id.data, 0, last_thread, message, True)
+                             form.pet_id.data, 0, last_thread, message, True, tag1="迷子", tag2="迷子発生")
 
         try:
             db.session.add(update_pet)
@@ -111,12 +112,26 @@ def myPage():
         del_thread = Thread.query.filter_by(
             thread_id=delform.thread_id.data).first()
         del_thread.del_flag = True  # lost_flag=True+del_flag=True→迷子発見
+        if del_thread.lost_flag:
+            del_thread.tag2 = "捜索終了"
+            found_pet = Pet.query.filter_by(pet_id=del_thread.pet_id).first()
+            found_pet.lost_flag = False
+            found_pet.lost_time = None
+            try:
+                db.session.add(found_pet)
+                db.session.commit()
+            except:
+                return redirect("/redirect?status=mypageff")
+        del_thread.updatetime()
         try:
             db.session.add(del_thread)
             db.session.commit()
         except:
             return redirect("/redirect?status=mypagetf")
-        return redirect("/redirect?status=mypagets")
+        if del_thread.lost_flag:
+            return redirect("/redirect?status=mypagefs")
+        else:
+            return redirect("/redirect?status=mypagets")
 
     pet_list = Pet.query.filter_by(  # 自身の飼っているペットの取得
         user_id=flask_login.current_user.id).all()
@@ -291,6 +306,24 @@ def send_mail(to_addr='ddn.developer@gmail.com', message="配信テスト"):  # 
         smtp.quit()
 
 
+def get_tag(message):
+    tag = requests.post('https://labs.goo.ne.jp/api/morph', json={
+        'app_id': secret['API']['app_id'], 'sentence': message, 'info_filter': 'form', 'pos_filter': '名詞'})
+    tag_json = tag.json()
+    tag_set = [None, None, None]
+    try:
+        tag_list = [tag[0]
+                    for tag in tag_json["word_list"][0]]  # jsonから要素の抽出
+        random.shuffle(tag_list)
+        tag_list.sort(key=len)
+        tag_list.reverse()
+        for i, tag in enumerate(tag_list):
+            tag_set[i] = tag
+    except:
+        pass
+    return tag_set
+
+
 @ app.route("/", methods=["GET", "POST"])
 @ app.route("/thread/<reply_id>", methods=["GET", "POST"])  # トップページ(スレッド一覧)
 def thread(reply_id="0"):
@@ -298,9 +331,9 @@ def thread(reply_id="0"):
         reply_id = 0
     reply_id = int(reply_id)
 
-    threadtop = Thread.query.filter_by(thread_id=reply_id, del_flag=False).filter(
+    threadtop = Thread.query.filter_by(thread_id=reply_id).filter(
         db.or_(Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).first()
-    threadlist = Thread.query.filter_by(reply_id=reply_id, del_flag=False).filter(
+    threadlist = Thread.query.filter_by(reply_id=reply_id).filter(
         db.or_(Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag)))
     nicknamelist = User.query.with_entities(User.id, User.user_nickname)
     petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name)
@@ -308,7 +341,7 @@ def thread(reply_id="0"):
     if reply_id == 0:
         threadlist = threadlist.order_by(Thread.thread_id.desc()).all()
     elif threadtop is None or threadtop.img_source == "":  # 存在しない部分にアクセスされたらトップへ
-        return redirect("/")
+        return redirect("/redirect?status=threade3")
     else:
         threadlist = threadlist.order_by(Thread.thread_id).all()
 
@@ -328,6 +361,7 @@ def thread(reply_id="0"):
 
         if form.is_submitted():
             if reply_id == 0:
+                tag_list = get_tag(form.message.data)
                 if form.pet_id.data == "" or form.pet_id.data is None:
                     return redirect("/redirect?status=threade1")
                 pet_id = form.pet_id.data
@@ -359,9 +393,10 @@ def thread(reply_id="0"):
             else:
                 img_url = None
                 pet_id = None
+                tag_list = [None, None, None]
             # DBへ保存
             new_thread = Thread(flask_login.current_user.id,
-                                pet_id, reply_id, img_url, form.message.data)
+                                pet_id, reply_id, img_url, form.message.data, tag1=tag_list[0], tag2=tag_list[1], tag3=tag_list[2])
             try:
                 db.session.add(new_thread)
                 db.session.commit()
@@ -371,7 +406,7 @@ def thread(reply_id="0"):
     return render_template("thread.html", form=form, reply_id=reply_id, threadlist=threadlist, threadtop=threadtop, nicknamelist=nicknamelist, petnamelist=petnamelist)
 
 
-@ app.route("/pet/<pet_id>", methods=["GET"])
+@app.route("/pet/<pet_id>", methods=["GET"])
 def pet(pet_id):
     if pet_id.isdigit() == False or int(pet_id) <= 0:
         return redirect("/")
@@ -385,6 +420,14 @@ def pet(pet_id):
     return render_template("pet.html", threadlist=pet_thread, petnamelist=petnamelist)
 
 
+@app.route("/tag/<tag_name>", methods=["GET"])
+def tag(tag_name):
+    tag_thread = Thread.query.filter(db.or_(Thread.tag1 == tag_name, Thread.tag2 == tag_name, Thread.tag3 == tag_name)).filter(
+        db.or_(Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).order_by(Thread.thread_id.desc()).all()
+    petnamelist = Pet.query.with_entities(Pet.pet_id, Pet.pet_name)
+    return render_template("tag.html", threadlist=tag_thread, petnamelist=petnamelist, tag_name=tag_name)
+
+
 @app.route("/searchPet", methods=["GET", "POST"])  # ペット探し
 def searchPet():
     form = SearchPetForm(request.form)
@@ -395,7 +438,8 @@ def searchPet():
         if filename == '':
             return redirect("/redirect?status=searchpete1")
         filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
-        img_url = os.path.join('search', filename)
+        img_url = os.path.join(
+            f'search/{datetime.date.today().strftime("%y/%m/%d")}/', datetime.date.today().strftime("%H%M%S")+filename)
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
         del img  # メモリ対策
 
@@ -414,22 +458,22 @@ def searchPet():
             found_reply_message = f"{form.prefecture.data}{sep_found_message}{form.city.data}{sep_found_message}{form.features_description.data}"
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, lost_flag=True, del_flag=False).first()
-            if lost_thread is None:
-                return redirect("/redirect?status=searchpete3")
-            message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見されました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
-            found_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
-            found_reply_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
-            new_thread = Thread(
-                1, None, lost_thread.thread_id, found_reply_message)
-            try:
-                db.session.add(new_thread)
-                db.session.commit()
-            except:
-                return redirect("/redirect?status=searchpete2")
-        mail = User.hqeuery.filter_by(id=lost_thread.user_id).first().email
-        message += "\n\n詳細\nhttp://date.ddns.net:7777/thread/" + \
-            str(lost_thread.thread_id)
-        send_mail(mail, message)
+            if lost_thread is not None:
+                message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見されました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
+                found_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
+                found_reply_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
+                new_thread = Thread(
+                    1, None, lost_thread.thread_id, img_url, found_reply_message, found_flag=True)
+                try:
+                    db.session.add(new_thread)
+                    db.session.commit()
+                except:
+                    return redirect("/redirect?status=searchpete2")
+                mail = User.query.filter_by(
+                    id=lost_thread.user_id).first().email
+                message += "\n\n詳細\nhttp://date.ddns.net:7777/thread/" + \
+                    str(lost_thread.thread_id)
+                send_mail(mail, message)
 
         found_thread = Thread(1, None, 0, img_url,
                               found_message, found_flag=True)
