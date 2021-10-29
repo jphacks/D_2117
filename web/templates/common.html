@@ -22,23 +22,18 @@
     
     <body class="d-flex flex-column h-100">
         {% include "navbar.html"%}
-        <div class="container">
+        <div class="container mb-5">
             
             <div class="row pb-4">
                 <h1 class="pt-4 pb-1 font-italic border-bottom">
                     {% block header %}{% endblock %}
                 </h1>
             </div>
-
-            
-            
             {%block main%}{%endblock%}
-
-            {% include "footer.html"%}
-        
-        <div>
+        </div>
         <script type='text/javascript'>
             {% block js %}{% endblock %}
         </script>
+        {% include "footer.html"%}
     </body>
 </html>

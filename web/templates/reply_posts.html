@@ -1,0 +1,76 @@
+<!--返信欄のみんなの反応-->
+
+<div class="pt-2">
+    <div class="row">
+      <div class="col">
+        {% for thread in threadlist %}
+          <div class="my-3">
+            {% if thread.found_flag %}
+            <div class="card p-3 mb-3　border-success">
+              <div class="mb-2 badge bg-success text-wrap fs-3">迷子発見速報！</div>
+            {% else %}
+            <div class="card p-3　mb-3">
+            {% endif %}
+              <div class="row no-gutters">
+                {% if thread.img_source != None %}
+                  <div class="col-md-4">
+                    <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
+                  </div>
+                {% endif %}
+
+
+                <!--メッセージ-->
+                <div class="col-md-8">
+                  <div class="card-body">
+                    {% if thread.found_flag == False %}
+                      <h5 class="card-title">{{ nicknamelist.filter_by(id=thread.user_id).first().user_nickname }}さんのコメント</h5>
+                    {% endif %}
+                    {% if thread.found_flag %} <!-- 迷子速報 -->
+                      <!--発見場所-->
+                      <div><b>●発見場所</b><br>
+                        {{ thread.message.split("!@#)&!^#$%^&*()")[0] }} {{ thread.message.split("!@#)&!^#$%^&*()")[1] }}<br><br>
+                      </div>
+                      <!--特徴-->
+                      <div><b>●特徴</b>
+                        <div style="white-space:pre-wrap;">{{ thread.message.split("!@#)&!^#$%^&*()")[2] }}</div><br>
+                      </div>
+                      
+                      <div>
+                        <b>●AI分析結果</b>
+                      </div>
+                      <!-- AI分析結果-->
+                      {% for petid_sim_thread in range(0, thread.message.split("!@#)&!^#$%^&*()")[3:] | length, 3) %}  
+                        <div class="">
+                          <a href="/pet/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 3]}}" class="text-reset">
+                            {{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}
+                          </a>さんとの類似度　{{thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 4]}} %
+                        </div>
+                      {% endfor %}
+
+                    {% else %} <!--返信による投稿-->
+                      <div style="white-space:pre-wrap;">{{thread.message}}</div>
+                    {% endif %}
+                  </div>
+
+                  <!--更新日時-->
+                  <div class="align-bottom ms-3 mb-2">
+                    {% if thread.found_flag %}
+                      <p class="card-text"><small class="text-muted">迷子発見日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                    {% else %}
+                      <p class="card-text"><small class="text-muted">投稿日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                    {% endif %}
+                  </div>
+
+                </div>
+
+
+
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  

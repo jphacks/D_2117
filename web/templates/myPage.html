@@ -3,7 +3,10 @@
 {%block header%}マイページ{%endblock%}
 
 {%block main%}
-
+    <div class="mb-1 text-muted">
+        あなたの<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>を登録しましょう！&nbsp;
+        もし<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>が迷子になってしまった際は、「迷子申請」を押してください。みなさんとAIが協力して捜索をお手伝いいたします。
+    </div>
     <div class="row">
         <h3 class="pb-2 font-italic border-bottom">登録済み<ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>一覧</h3>
     </div>
@@ -28,13 +31,24 @@
                                 <td nowrap>{{pet.pet_name}}</td>
                                 <td style="white-space:pre-wrap;">{{pet.features_description}}</td>
                                 <td nowrap>
-                                    {% if pet.lost_flag %}
-                                        <a href="/thread/{{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}">捜索中</a>
+                                    {% if pet.lost_flag and lostthread.filter_by(pet_id=pet.pet_id).first().del_flag == False %}
+                                        <div class="d-grid">
+                                            <a class="btn btn-outline-warning btn-sm m-1" href="/thread/{{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}" role="button">捜索中の投稿</a>
+                                        </div>
+                                        <form id="mypagedelform" method="post">
+                                            {{ delform.csrf_token }}
+                                            <input type="hidden" name="thread_id" value={{lostthread.filter_by(pet_id=pet.pet_id).first().thread_id}}>
+                                            <div class="d-grid">
+                                                <button class="btn btn-outline-info btn-sm m-1" id='delete' name='delete' type=submit>発見</button>
+                                            </div>
+                                        </form>
                                     {% else %}
                                         <form id="mypageform" method="post">
                                             {{ form.csrf_token }}
                                             <input type="hidden" name="pet_id" value={{pet.pet_id}}>
-                                            {{ form.lost }}
+                                            <div class="d-grid">
+                                                <button class="btn btn-outline-dark btn-sm m-1" id='lost' name='lost' type=submi>迷子申請</button>
+                                            </div>
                                         </form>
                                     {% endif %}
                                 </td>
@@ -58,14 +72,14 @@
     
     
     <div class='row'>
-        <h3 class="pt-4 pb-1 font-italic border-bottom">
+        <h3 class="pb-1 font-italic border-bottom">
           あなたの投稿
         </h3>
     </div>
 
 
     <div class="row">
-        <!-- 投稿一覧を表示　-->
+        <!-- 投稿一覧を表示-->
         {% include "posts.html"%}
     </div>
 
