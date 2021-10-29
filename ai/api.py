@@ -92,8 +92,8 @@ def predict():
 
 
 def main():
-    #app.run(debug=True, port=7775)
-    serve(app, host='0.0.0.0', port=7775)
+    app.run(debug=True, port=7775)
+    # serve(app, host='0.0.0.0', port=7775)
 
 
 if __name__ == "__main__":
