@@ -1,5 +1,5 @@
 from email import message
-from flask import render_template, request, redirect, flash, send_from_directory
+from flask import render_template, request, redirect, flash, send_from_directory, abort
 from sqlalchemy.orm import query
 import flask_login
 from waitress import serve
@@ -409,11 +409,12 @@ def thread(reply_id="0"):
 @app.route("/pet/<pet_id>", methods=["GET"])
 def pet(pet_id):
     if pet_id.isdigit() == False or int(pet_id) <= 0:
-        return redirect("/")
+        return abort(404)
     pet_id = int(pet_id)
 
     pet_thread = Thread.query.filter_by(pet_id=pet_id).filter(db.or_(
         Thread.del_flag == False, db.and_(Thread.del_flag, Thread.lost_flag))).all()
+
     petnamelist = Pet.query.with_entities(
         Pet.pet_id, Pet.pet_name).filter_by(pet_id=pet_id)
 
@@ -438,8 +439,11 @@ def searchPet():
         if filename == '':
             return redirect("/redirect?status=searchpete1")
         filename = "".join(filename.split(".")[:-1])  # 拡張子を削除
+
+        os.makedirs(os.path.join(
+            app.config['UPLOAD_FOLDER'], f'search/{datetime.date.today().strftime("%y/%m/%d")}/'), exist_ok=True)
         img_url = os.path.join(
-            f'search/{datetime.date.today().strftime("%y/%m/%d")}/', datetime.date.today().strftime("%H%M%S")+filename)
+            f'search/{datetime.date.today().strftime("%y/%m/%d")}/', datetime.date.today().strftime("%H_%M_%S_")+filename)
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
         del img  # メモリ対策
 
@@ -459,11 +463,11 @@ def searchPet():
             lost_thread = Thread.query.filter_by(  # 予測対象の迷子スレッドを取得
                 pet_id=pet_id, lost_flag=True, del_flag=False).first()
             if lost_thread is not None:
-                message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見されました。\n確認してください。\n発見者のコメント:\n{form.features_description.data}"
+                message = f"類似度：{sim*100:.2f}%\n似ている子が {form.prefecture.data} {form.city.data} で発見されました。\n確認してください。\n発見者(Email:{form.email.data})のコメント:\n{form.features_description.data}"
                 found_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
                 found_reply_message += f"{sep_found_message}{int(pet_id)}{sep_found_message}{sim*100:.2f}{sep_found_message}{lost_thread.thread_id}"
                 new_thread = Thread(
-                    1, None, lost_thread.thread_id, img_url, found_reply_message, found_flag=True)
+                    1, None, lost_thread.thread_id, img_url, found_reply_message, found_flag=True, tag1="迷子", tag2="迷子発見")
                 try:
                     db.session.add(new_thread)
                     db.session.commit()
@@ -476,7 +480,7 @@ def searchPet():
                 send_mail(mail, message)
 
         found_thread = Thread(1, None, 0, img_url,
-                              found_message, found_flag=True)
+                              found_message, found_flag=True, tag1="迷子", tag2="迷子発見")
 
         if flask_login.current_user.is_authenticated:
             email = flask_login.current_user.email
@@ -496,9 +500,14 @@ def searchPet():
     return render_template("searchPet.html", form=form)
 
 
+@app.errorhandler(404)
+def e404(error):
+    return redirect("/redirect?status=e404")
+
+
 """サーバの起動"""
 
 
 def main():
-    app.run(host='0.0.0.0', port=7777, debug=True)
-    # serve(app, host='0.0.0.0', port=7777)
+    # app.run(host='0.0.0.0', port=7777, debug=True)
+    serve(app, host='0.0.0.0', port=7777)

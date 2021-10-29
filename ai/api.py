@@ -12,6 +12,8 @@ import torchvision.transforms as transforms
 from ai.utils.model import CustomModel
 import os
 
+from waitress import serve
+
 
 app = Flask(__name__)
 
@@ -90,7 +92,8 @@ def predict():
 
 
 def main():
-    app.run(debug=True, port=7775)
+    #app.run(debug=True, port=7775)
+    serve(app, host='0.0.0.0', port=7777)
 
 
 if __name__ == "__main__":
