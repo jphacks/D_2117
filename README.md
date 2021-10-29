@@ -55,6 +55,8 @@
 ## 開発技術
 ### 活用した技術
 #### API・データ
+- [gooラボ 形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)
+    - タイムラインのつぶやきから、形態素解析APIを活用し名詞を抽出するのに使用しました。抽出された名詞を文字列の長い順に並び替え、最大３つの名詞を「#タグ」として表示しました。
 - [Kaggle Dogs vs. Cats データセット](https://www.kaggle.com/c/dogs-vs-cats/data)
     - AIテスト用データ
 
