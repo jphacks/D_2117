@@ -1,6 +1,5 @@
 # FindPet.Me 〜日々の投稿が大切な家族を救う〜
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
-
+[![IMAGE ALT TEXT HERE](https://user-images.githubusercontent.com/64422386/139472603-10e6fca2-038d-4122-884a-cd926fec199a.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 ## 製品概要
 [FindPet.Me Webページ](http://date.ddns.net:7777/)
 ### 背景(製品開発のきっかけ、課題等）
