@@ -1,50 +1,177 @@
 <div class="pt-2">
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      {% for thread in threadlist %}
-        <div class="col">
-          <!--迷子-->
-            {% if thread.lost_flag %}
-            <div class="card h-100 p-3 border-warning">
-                <div class="mb-2 badge bg-warning text-wrap fs-3">
-                    迷子速報！
-                </div>
-            {% else %}
-            <div class="card h-100 p-3">
-            {% endif %}
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for thread in threadlist %}
+      <div class="col">
+        <!--迷子-->
+          {% if thread.lost_flag and thread.del_flag %}
+          <div class="card h-100 p-3 border-info">
+            <div class="mb-2 badge bg-info text-wrap fs-3">迷子と再会！</div>
+          {% elif thread.lost_flag %}
+          <div class="card h-100 p-3 border-warning">
+            <div class="mb-2 badge bg-warning text-wrap fs-3">迷子速報！</div>
+          {% elif thread.found_flag %}
+          <div class="card h-100 p-3 border-success">
+            <div class="mb-2 badge bg-success text-wrap fs-3">迷子発見速報！</div>
+          {% else %}
+          <div class="card h-100 p-3">
+          {% endif %}
+              {% if thread.img_source != None %}
                 <img src="/static/images/{{thread.img_source}}.jpg" class='rounded img-fluid'>
-                <div class="card-body">
-                    <div style="white-space:pre-wrap;">{{thread.message}}</div><br>
+              {% endif %}
+              <!--card body-->
+              <div class="card-body">
+                {% if thread.found_flag == False %}
+                  {% if thread.img_source != None %}
+                  <div class="text-muted pb-2">
+                    <ruby><rb>ペット</rb><rp>（</rp><rt>かぞく</rt><rp>）</rp></ruby>のお名前 
+                    <a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
+                  </div>
+                  {% endif %}
+                {% endif %}
+                <div class="">
+                  {% if thread.lost_flag and thread.del_flag %}
+                  <!--迷子再会-->
+                    <!--特徴-->
+                    <div class="mb-3">
+                      皆様のおかげで<a href="/pet/{{thread.pet_id}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.pet_id).first().pet_name}}</a>
+                      さんと家族の皆さんは無事再会することができました。<br>ご協力頂いた皆様。誠にありがとうございました。
+                    </div> 
+                    <div><b>●特徴</b>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div><br>
+                    </div> 
+                  {% elif thread.found_flag %}
+                  <!--迷子発見速報-->
+                    <!--発見場所-->
+                    <div><b>●発見場所</b><br>
+                      {{ thread.message.split("!@#)&!^#$%^&*()")[0] }} {{ thread.message.split("!@#)&!^#$%^&*()")[1] }}<br><br>
+                    </div>
+                    <!--特徴-->
+                    <div><b>●特徴</b>
+                      <div style="white-space:pre-wrap;">{{ thread.message.split("!@#)&!^#$%^&*()")[2] }}</div><br>
+                    </div>
+                    
+                    <div>
+                      <b>●AI分析結果</b>
+                    </div>
+                    
+                    <!-- AI分析結果-->
+                    {% for petid_sim_thread in range(0, thread.message.split("!@#)&!^#$%^&*()")[3:] | length, 3) %}  
+                      <div class="">
+                        もしかして<a href="/pet/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 3]}}" class="text-reset">{{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}</a>さん？
+                        （類似度 : {{thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 4]}} %）
+                      </div>
+                      <div class="mb-2">
+                        <div class="d-grid">
+                          <a class="btn btn-outline-success" href="/thread/{{thread.message.split('!@#)&!^#$%^&*()')[(loop.index0)*3 + 5]}}" role="button">
+                            {{petnamelist.filter_by(pet_id = thread.message.split("!@#)&!^#$%^&*()")[(loop.index0)*3 + 3]).first().pet_name}}さんの迷子速報を見る
+                          </a>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  
+                  {% elif thread.lost_flag %}
+                  <!--迷子速報-->
+                    <!--特徴-->
+                    <div><b>●特徴</b>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div><br>
+                    </div>                         
+                  {% elif (thread.img_source == None) and (thread.reply_id != 0) %}
+                  <!--返信-->
+                    <div><b>●投稿への返信</b></br>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div>
+                    </div>
+                  {% else %}
+                  <!--通常投稿-->
+                    <div><b>●つぶやき</b><br>
+                      <div style="white-space:pre-wrap;">{{ thread.message }}</div>
+                    </div>
+                  {% endif %}
                 </div>
+                
+              </div>
 
-                <!-- MyPageの場合は投稿削除フラグを表示-->
-                {%- if request.path == "/myPage" %}
+
+
+              <!--更新日時-->
+              <div class="align-bottom ms-3 mb-2">
+
+                <!-- 自動生成された表示 -->
+                {% if thread.tag1 != None %}
+                  <div class="text-muted mb-2">
+                    <div><b>●自動生成タグ</b><br>
+                      {% if thread.tag1 != None %}<a href="/tag/{{ thread.tag1 }}" class="text-reset">#{{ thread.tag1 }}</a>{% endif %}
+                      {% if thread.tag2 != None %}<a href="/tag/{{ thread.tag2 }}" class="text-reset">#{{ thread.tag2 }}</a>{% endif %}
+                      {% if thread.tag3 != None %}<a href="/tag/{{ thread.tag3 }}" class="text-reset">#{{ thread.tag3 }}</a>{% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+
+                
+                  {% if thread.lost_flag %}
+                    <p class="card-text"><small class="text-muted">迷子登録日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% elif thread.found_flag %}
+                    <p class="card-text"><small class="text-muted">迷子発見日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% else %}
+                    <p class="card-text"><small class="text-muted">投稿日時 {{ thread.update.strftime("%y/%m/%d %H:%M") }}</small></p>
+                  {% endif %}
+              </div>
+
+              <!-- MyPageの場合は投稿削除フラグを表示-->
+              {%- if request.path == "/myPage" %}
                 <div class="card-footer bg-transparent">
-                    <!--変身ボタン-->
+                    <!--返信ボタン-->
                     <div class="d-grid pb-3">
-                        <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                      {% if thread.lost_flag and thread.del_flag %}
+                        <a class="btn btn-outline-info" href="/thread/{{thread.thread_id}}" role="button">感謝のメッセージを送る</a>
+                      {% elif thread.lost_flag %}
+                        <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% elif thread.found_flag %}
+                        <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% elif (thread.img_source == None) and (thread.reply_id != 0) %}
+                        <a class="btn btn-outline-primary" href="/thread/{{ thread.reply_id }}" role="button">返信元の投稿を見る</a>
+                      {% else %}
+                        {% if thread.img_source != None %}
+                          <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                        {% endif %}
+                      {% endif %}
                     </div>
                     <!--削除ボタン-->
-                    <form id="mypagedelform" method="post">
-                        {{ delform.csrf_token }}
-                        <div class="d-grid">
-                            <input type="hidden" name="thread_id" value={{thread.thread_id}}>
-                            <button class="btn btn-outline-dark btn-sm" id='delete' name='delete' type=submit value='削除'>
-                                投稿を削除する
-                            </button>
-                        </div>
-                    </form>
+                    {% if thread.lost_flag != True %}
+                      <form id="mypagedelform" method="post">
+                          {{ delform.csrf_token }}
+                          <div class="d-grid">
+                              <input type="hidden" name="thread_id" value={{thread.thread_id}}>
+                              <button class="btn btn-outline-dark btn-sm" id='delete' name='delete' type=submit value='削除'>
+                                {% if (thread.img_source == None) and (thread.reply_id != 0) %}
+                                  返信を削除する
+                                {% else %}
+                                  投稿を削除する
+                                {% endif %}
+                              </button>
+                          </div>
+                      </form>
+                    {% endif %}
                 </div>
-                {% else %}
+              {% else %}
                 <div class="card-footer bg-transparent">
                     <div class="d-grid">
+                      {% if thread.lost_flag and thread.del_flag %}
+                        <a class="btn btn-outline-info" href="/thread/{{thread.thread_id}}" role="button">喜びのメッセージを送る</a>
+                      {% elif thread.lost_flag %}
+                      <a class="btn btn-outline-warning" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% elif thread.found_flag %}
+                        <a class="btn btn-outline-success" href="/thread/{{thread.thread_id}}" role="button">情報提供する</a>
+                      {% else %}
                         <a class="btn btn-outline-primary" href="/thread/{{thread.thread_id}}" role="button">返信する</a>
+                      {% endif %}
                     </div>
                 </div>
-                {% endif %}
-            </div>
+              {% endif %}
+          </div>
+      
         
-          
-        </div>
-      {% endfor %}
-    </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
+

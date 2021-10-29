@@ -28,6 +28,13 @@
         alert("削除しました。");
         location.href="/myPage"
 
+    {% elif status == "mypageff" %}
+        alert("エラーが発生しました。");
+        location.href="/myPage"
+    {% elif status == "mypagefs" %}
+        alert("迷子速報を取り消しました。");
+        location.href="/myPage"
+
     {% elif status == "petinfof" %}
         alert("登録に失敗しました。");
         location.href="/petInfo"
@@ -62,6 +69,9 @@
     {% elif status == "threade2" %}
         alert("画像を登録してください。");
         location.href="/"
+    {% elif status == "threade3" %}
+        alert("ページが見つかりません。投稿が削除された可能性があります。");
+        location.href="/"
 
     {% elif status == "threadf" %}
         alert("登録に失敗しました。");
@@ -84,11 +94,11 @@
         alert("登録しました。");
         location.href="/searchPet"
 
+    {% elif status == "e404" %}
+        alert("ページが存在しません");
+        location.href="/"
+
     {% else %}
         location.href="/"
     {% endif %}
 {% endblock %}
-
-return redirect("/redirect?status=threadsuccess&next="+str(reply_id))
-alert("ログアウトしました。\n3秒後にページを移動します。");
-setTimeout("location.href='/'",1000*3);

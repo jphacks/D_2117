@@ -23,7 +23,7 @@ class User(flask_login.UserMixin, db.Model):
     user_fname = db.Column(db.String(10), nullable=False)  # 名前
     user_lname = db.Column(db.String(10), nullable=False)  # 苗字
     email = db.Column(db.String(50), unique=True, nullable=False)  # メール
-    tell = db.Column(db.String(12),  unique=True, nullable=False)  # 電話
+    tell = db.Column(db.String(12),  nullable=False)  # 電話
     prefecture = db.Column(db.String(10), nullable=False)  # 県
     city = db.Column(db.String(20), nullable=False)  # 市
     point = db.Column(db.Integer, default=1000)  # アプリ内通貨
@@ -95,13 +95,14 @@ class SearchPet(db.Model):
     img_source = db.Column(db.String(100), nullable=False)  # 画像パス
     found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     found_time = db.Column(db.DateTime, default=datetime.datetime.now)  # 登録日時
-    email = db.Column(db.String(50), primary_key=True)  # 発見した人のメールアドレス
+    email = db.Column(db.String(50))  # 発見した人のメールアドレス
 
-    def __init__(self, prefecture, city, features_description, img_source):
+    def __init__(self, prefecture, city, features_description, img_source, email):
         self.prefecture = prefecture
         self.city = city
         self.features_description = features_description
         self.img_source = img_source
+        self.email = email
 
 
 class Thread(db.Model):
@@ -112,23 +113,34 @@ class Thread(db.Model):
     reply_id = db.Column(db.Integer, default=0, nullable=False)  # リプライID
     img_source = db.Column(db.String(100), default=None)  # 画像パス
     message = db.Column(db.String(500))  # メッセージ
-    lost_flag = db.Column(db.Boolean, default=False)
+    lost_flag = db.Column(db.Boolean, default=False)  # 迷子フラグ
+    found_flag = db.Column(db.Boolean, default=False)  # 発見フラグ
     del_flag = db.Column(db.Boolean, default=False)  # 削除フラグ
     total_point = db.Column(db.Integer, default=0)  # スレッド内の総移動数
     update = db.Column(db.DateTime, default=datetime.datetime.now)  # 更新日時
+    tag1 = db.Column(db.String(50))
+    tag2 = db.Column(db.String(50))
+    tag3 = db.Column(db.String(50))
 
-    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False):
+    def __init__(self, user_id, pet_id, reply_id, img_source, message, lost_flag=False, found_flag=False, tag1=None, tag2=None, tag3=None):
         self.user_id = user_id
         self.pet_id = pet_id
         self.reply_id = reply_id
         self.img_source = img_source
         self.message = message
         self.lost_flag = lost_flag
+        self.found_flag = found_flag
+        self.tag1 = tag1
+        self.tag2 = tag2
+        self.tag3 = tag3
+
+    def updatetime(self):
+        self.update = datetime.datetime.now()
 
 
 db.create_all()
 if User.query.first() is None:
-    new_user = User("管理者", "01", "管理者",
+    new_user = User("AI", "AI", "管理者",
                     secret['db']['user'], "00000000000", "長野県", "茅野市")
     new_user_pass = UserLogin(secret['db']['user'], secret['db']['pass'], None)
     try:

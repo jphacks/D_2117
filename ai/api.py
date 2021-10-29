@@ -12,6 +12,8 @@ import torchvision.transforms as transforms
 from ai.utils.model import CustomModel
 import os
 
+from waitress import serve
+
 
 app = Flask(__name__)
 
@@ -30,14 +32,15 @@ device = 'cpu'
 print(f"Done!!")
 
 
-def to_RGB(image:Image, file_name='./tmp/tmp.jpg'):
+def to_RGB(image: Image, file_name='./tmp/tmp.jpg'):
 
     os.makedirs('./tmp/', exist_ok=True)
-    
-    if image.mode == 'RGB': return image
-    image.load() # required for png.split()
+
+    if image.mode == 'RGB':
+        return image
+    image.load()  # required for png.split()
     background = Image.new("RGB", image.size, (255, 255, 255))
-    background.paste(image, mask=image.split()[3]) # 3 is the alpha channel
+    background.paste(image, mask=image.split()[3])  # 3 is the alpha channel
 
     background.save(file_name, 'JPEG', quality=80)
     return Image.open(file_name)
@@ -89,7 +92,8 @@ def predict():
 
 
 def main():
-    app.run(debug=True, port=7775)
+    #app.run(debug=True, port=7775)
+    serve(app, host='0.0.0.0', port=7775)
 
 
 if __name__ == "__main__":
