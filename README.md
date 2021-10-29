@@ -1,4 +1,4 @@
-# FindPet.Me 〜日々の投稿が大切な家族を救う〜
+# FindPet.Me 〜日々の投稿が大切な家族をづなぐ〜
 [![IMAGE ALT TEXT HERE](https://user-images.githubusercontent.com/64422386/139472603-10e6fca2-038d-4122-884a-cd926fec199a.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 ## 製品概要
 [FindPet.Me Webページ](http://date.ddns.net:7777/)
