@@ -1,5 +1,6 @@
 # FindPet.Me 〜日々の投稿が大切な家族をづなぐ〜
 [![IMAGE ALT TEXT HERE](https://user-images.githubusercontent.com/64422386/139472603-10e6fca2-038d-4122-884a-cd926fec199a.jpg)](https://youtu.be/IcQucvxqbXQ)
+↑クリックするとデモ動画が再生されます
 ## Webアプリ
 [FindPet.Me](http://date.ddns.net:7777/)
 どうぞご利用ください。
