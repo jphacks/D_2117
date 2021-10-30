@@ -447,6 +447,12 @@ def searchPet():
         img.save(os.path.join(app.config['UPLOAD_FOLDER'], img_url+".jpg"))
         del img  # メモリ対策
 
+        # 発見者メールアドレスの設定
+        if flask_login.current_user.is_authenticated:
+            email = flask_login.current_user.email
+        else:
+            email = form.meimail.data
+
         # AI関連の記述する部分
         try:
             vector = np.array(ai_api(img_url+".jpg"))
@@ -481,11 +487,6 @@ def searchPet():
 
         found_thread = Thread(1, None, 0, img_url,
                               found_message, found_flag=True, tag1="迷子", tag2="迷子発見")
-
-        if flask_login.current_user.is_authenticated:
-            email = flask_login.current_user.email
-        else:
-            email = form.meimail.data
 
         new_searchpet = SearchPet(
             form.prefecture.data, form.city.data, form.features_description.data, img_url, email)
